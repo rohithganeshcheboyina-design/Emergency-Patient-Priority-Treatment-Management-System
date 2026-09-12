@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Priority?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<ScrollPane fitToWidth="true" stylesheets="@../css/main.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.hospital.controller.ReportsController">
+    <VBox spacing="18.0" styleClass="content-area">
+        <!-- Title & Export Header -->
+        <HBox alignment="CENTER_LEFT" spacing="12.0">
+            <VBox spacing="2.0">
+                <Label style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #0F172A;" text="Emergency Department Reports &amp; Analytics" />
+                <Label style="-fx-font-size: 12px; -fx-text-fill: #64748B;" text="Generate operational reports, analyze emergency triage volumes, and export records for auditing" />
+            </VBox>
+            <Region HBox.hgrow="ALWAYS" />
+            <Button onAction="#handleExportCSV" styleClass="btn-primary" text="📥 Export CSV Report" />
+            <Button onAction="#handleRefresh" styleClass="btn-secondary" text="🔄 Refresh" />
+        </HBox>
+
+        <!-- Report KPI Summary Cards -->
+        <GridPane hgap="14.0" vgap="14.0">
+            <VBox styleClass="metric-card" GridPane.columnIndex="0" GridPane.hgrow="ALWAYS">
+                <Label styleClass="metric-card-title" text="TOTAL REPORTED CASES" />
+                <Label fx:id="lblReportTotal" styleClass="metric-card-value" text="0" />
+            </VBox>
+
+            <VBox styleClass="metric-card, card-critical" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS">
+                <Label styleClass="metric-card-title" text="CRITICAL TRIAGE RATE" />
+                <Label fx:id="lblCriticalRate" styleClass="metric-card-value" text="0%" />
+            </VBox>
+
+            <VBox styleClass="metric-card" GridPane.columnIndex="2" GridPane.hgrow="ALWAYS">
+                <Label styleClass="metric-card-title" text="AVERAGE QUEUE WAIT" />
+                <Label fx:id="lblReportAvgWait" styleClass="metric-card-value" text="0 min" />
+            </VBox>
+
+            <VBox styleClass="metric-card" GridPane.columnIndex="3" GridPane.hgrow="ALWAYS">
+                <Label styleClass="metric-card-title" text="DISCHARGED / TREATED" />
+                <Label fx:id="lblDischargedTotal" styleClass="metric-card-value" text="0" />
+            </VBox>
+        </GridPane>
+
+        <!-- Report Type & Filter Selection Bar -->
+        <HBox alignment="CENTER_LEFT" spacing="12.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 8px; -fx-border-color: #E2E8F0; -fx-border-radius: 8px; -fx-padding: 12px 16px;">
+            <VBox spacing="4.0">
+                <Label styleClass="form-label" text="Report Type:" />
+                <ComboBox fx:id="cmbReportType" prefWidth="220.0" promptText="Select Report Type" />
+            </VBox>
+
+            <VBox spacing="4.0">
+                <Label styleClass="form-label" text="Emergency Severity:" />
+                <ComboBox fx:id="cmbSeverityFilter" prefWidth="170.0" promptText="All Severities" />
+            </VBox>
+
+            <VBox spacing="4.0">
+                <Label styleClass="form-label" text="Workflow Status:" />
+                <ComboBox fx:id="cmbStatusFilter" prefWidth="160.0" promptText="All Statuses" />
+            </VBox>
+
+            <Region HBox.hgrow="ALWAYS" />
+
+            <VBox alignment="BOTTOM_LEFT" spacing="4.0">
+                <Button onAction="#handleResetFilters" styleClass="btn-secondary" text="Reset Filters" />
+            </VBox>
+        </HBox>
+
+        <!-- Report Data Table -->
+        <TableView fx:id="tblReportData" minHeight="420.0" prefHeight="460.0">
+            <columns>
+                <TableColumn fx:id="colCode" prefWidth="85.0" text="Code" />
+                <TableColumn fx:id="colToken" prefWidth="90.0" text="Token" />
+                <TableColumn fx:id="colName" prefWidth="180.0" text="Patient Name" />
+                <TableColumn fx:id="colAgeGender" prefWidth="90.0" text="Age/Sex" />
+                <TableColumn fx:id="colEmergency" prefWidth="130.0" text="Emergency Level" />
+                <TableColumn fx:id="colPriority" prefWidth="70.0" text="Priority" />
+                <TableColumn fx:id="colArrival" prefWidth="130.0" text="Arrival Time" />
+                <TableColumn fx:id="colWait" prefWidth="100.0" text="Wait Time" />
+                <TableColumn fx:id="colDoctor" prefWidth="150.0" text="Doctor" />
+                <TableColumn fx:id="colStatus" prefWidth="120.0" text="Status" />
+            </columns>
+            <placeholder>
+                <Label style="-fx-text-fill: #94A3B8;" text="No records available for the selected report filters." />
+            </placeholder>
+        </TableView>
+    </VBox>
+</ScrollPane>

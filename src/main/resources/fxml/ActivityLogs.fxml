@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Priority?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<ScrollPane fitToWidth="true" stylesheets="@../css/main.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.hospital.controller.ActivityLogsController">
+    <VBox spacing="18.0" styleClass="content-area">
+        <!-- Title & Action Bar -->
+        <HBox alignment="CENTER_LEFT" spacing="12.0">
+            <VBox spacing="2.0">
+                <Label style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #0F172A;" text="System Activity &amp; Audit Logs" />
+                <Label style="-fx-font-size: 12px; -fx-text-fill: #64748B;" text="Administrative immutable audit log of patient admissions, triage events, clinical treatments, and security access" />
+            </VBox>
+            <Region HBox.hgrow="ALWAYS" />
+            <Button onAction="#handleRefresh" styleClass="btn-secondary" text="🔄 Refresh Logs" />
+        </HBox>
+
+        <!-- Filters Bar -->
+        <HBox alignment="CENTER_LEFT" spacing="12.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 8px; -fx-border-color: #E2E8F0; -fx-border-radius: 8px; -fx-padding: 12px 16px;">
+            <TextField fx:id="txtSearch" prefWidth="280.0" promptText="🔍  Search logs by user, action, or details..." />
+            <ComboBox fx:id="cmbActionFilter" prefWidth="200.0" promptText="Filter by Action" />
+            <Button onAction="#handleReset" styleClass="btn-secondary" text="Reset" />
+            <Region HBox.hgrow="ALWAYS" />
+            <Label fx:id="lblLogCountBadge" styleClass="badge-token" text="Total: 0 Logs" />
+        </HBox>
+
+        <!-- Logs Table -->
+        <TableView fx:id="tblLogs" minHeight="460.0" prefHeight="500.0">
+            <columns>
+                <TableColumn fx:id="colId" prefWidth="65.0" text="Log ID" />
+                <TableColumn fx:id="colTimestamp" prefWidth="150.0" text="Timestamp" />
+                <TableColumn fx:id="colAction" prefWidth="160.0" text="Action" />
+                <TableColumn fx:id="colUser" prefWidth="130.0" text="Operator" />
+                <TableColumn fx:id="colEntity" prefWidth="130.0" text="Entity Target" />
+                <TableColumn fx:id="colDescription" prefWidth="480.0" text="Event Description" />
+            </columns>
+            <placeholder>
+                <Label style="-fx-text-fill: #94A3B8;" text="No activity logs found." />
+            </placeholder>
+        </TableView>
+    </VBox>
+</ScrollPane>

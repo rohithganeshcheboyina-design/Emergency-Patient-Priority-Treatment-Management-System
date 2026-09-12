@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.BarChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.chart.PieChart?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Priority?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<ScrollPane fitToWidth="true" stylesheets="@../css/main.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.hospital.controller.AdminDashboardController">
+    <VBox spacing="20.0" styleClass="content-area">
+        <!-- Title & Action Bar -->
+        <HBox alignment="CENTER_LEFT" spacing="12.0">
+            <VBox spacing="2.0">
+                <Label style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #0F172A;" text="Emergency Department Overview" />
+                <Label style="-fx-font-size: 12px; -fx-text-fill: #64748B;" text="Real-time administrative analytics, queue status, and departmental metrics" />
+            </VBox>
+            <Region HBox.hgrow="ALWAYS" />
+            <Button onAction="#handleViewQueue" styleClass="btn-secondary" text="⚡ Live Queue" />
+            <Button onAction="#handleRefresh" styleClass="btn-primary" text="🔄 Refresh Data" />
+        </HBox>
+
+        <!-- Medical Disclaimer Banner -->
+        <HBox alignment="CENTER_LEFT" spacing="10.0" styleClass="disclaimer-banner">
+            <Label style="-fx-font-size: 14px;" text="ℹ️" />
+            <Label styleClass="disclaimer-text" text="Triage priority is an operational decision support classification and does not replace professional medical judgment." />
+        </HBox>
+
+        <!-- Summary Metric Cards (Row 1: Priority Breakdown) -->
+        <GridPane hgap="14.0" vgap="14.0">
+            <VBox styleClass="metric-card" GridPane.columnIndex="0" GridPane.hgrow="ALWAYS">
+                <Label styleClass="metric-card-title" text="TOTAL REGISTERED" />
+                <Label fx:id="lblTotalPatients" styleClass="metric-card-value" text="0" />
+                <Label style="-fx-font-size: 11px; -fx-text-fill: #64748B;" text="All time admissions" />
+            </VBox>
+
+            <VBox styleClass="metric-card, card-critical" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS">
+                <Label styleClass="metric-card-title" text="CRITICAL (PRIORITY 1)" />
+                <Label fx:id="lblCriticalCount" styleClass="metric-card-value" text="0" />
+                <Label style="-fx-font-size: 11px; -fx-text-fill: #DC2626;" text="Immediate intervention" />
+            </VBox>
+
+            <VBox styleClass="metric-card, card-high" GridPane.columnIndex="2" GridPane.hgrow="ALWAYS">
+                <Label styleClass="metric-card-title" text="HIGH (PRIORITY 2)" />
+                <Label fx:id="lblHighCount" styleClass="metric-card-value" text="0" />
+                <Label style="-fx-font-size: 11px; -fx-text-fill: #EA580C;" text="Urgent medical care" />
+            </VBox>
+
+            <VBox styleClass="metric-card, card-medium" GridPane.columnIndex="3" GridPane.hgrow="ALWAYS">
+                <Label styleClass="metric-card-title" text="MEDIUM (PRIORITY 3)" />
+                <Label fx:id="lblMediumCount" styleClass="metric-card-value" text="0" />
+                <Label style="-fx-font-size: 11px; -fx-text-fill: #D97706;" text="Prompt attention" />
+            </VBox>
+
+            <VBox styleClass="metric-card, card-low" GridPane.columnIndex="4" GridPane.hgrow="ALWAYS">
+                <Label styleClass="metric-card-title" text="LOW (PRIORITY 4)" />
+                <Label fx:id="lblLowCount" styleClass="metric-card-value" text="0" />
+                <Label style="-fx-font-size: 11px; -fx-text-fill: #059669;" text="Non-urgent condition" />
+            </VBox>
+        </GridPane>
+
+        <!-- Summary Metric Cards (Row 2: Workflow Stages) -->
+        <GridPane hgap="14.0" vgap="14.0">
+            <VBox styleClass="metric-card" GridPane.columnIndex="0" GridPane.hgrow="ALWAYS">
+                <Label styleClass="metric-card-title" text="WAITING IN QUEUE" />
+                <Label fx:id="lblWaitingCount" styleClass="metric-card-value" text="0" />
+                <Label style="-fx-font-size: 11px; -fx-text-fill: #64748B;" text="Awaiting physician call" />
+            </VBox>
+
+            <VBox styleClass="metric-card" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS">
+                <Label styleClass="metric-card-title" text="CALLED TO BAY" />
+                <Label fx:id="lblCalledCount" styleClass="metric-card-value" text="0" />
+                <Label style="-fx-font-size: 11px; -fx-text-fill: #64748B;" text="Entering examination" />
+            </VBox>
+
+            <VBox styleClass="metric-card" GridPane.columnIndex="2" GridPane.hgrow="ALWAYS">
+                <Label styleClass="metric-card-title" text="CURRENTLY IN TREATMENT" />
+                <Label fx:id="lblInTreatmentCount" styleClass="metric-card-value" text="0" />
+                <Label style="-fx-font-size: 11px; -fx-text-fill: #64748B;" text="Active clinical care" />
+            </VBox>
+
+            <VBox styleClass="metric-card" GridPane.columnIndex="3" GridPane.hgrow="ALWAYS">
+                <Label styleClass="metric-card-title" text="TREATED / STABILIZED" />
+                <Label fx:id="lblTreatedCount" styleClass="metric-card-value" text="0" />
+                <Label style="-fx-font-size: 11px; -fx-text-fill: #64748B;" text="Procedure complete" />
+            </VBox>
+
+            <VBox styleClass="metric-card" GridPane.columnIndex="4" GridPane.hgrow="ALWAYS">
+                <Label styleClass="metric-card-title" text="DISCHARGED" />
+                <Label fx:id="lblDischargedCount" styleClass="metric-card-value" text="0" />
+                <Label style="-fx-font-size: 11px; -fx-text-fill: #64748B;" text="Safely discharged" />
+            </VBox>
+        </GridPane>
+
+        <!-- Dynamic Charts Grid -->
+        <GridPane hgap="16.0" vgap="16.0">
+            <!-- Chart 1: Priority Distribution Pie Chart -->
+            <VBox prefHeight="320.0" styleClass="metric-card" GridPane.columnIndex="0" GridPane.hgrow="ALWAYS">
+                <Label style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #0F172A;" text="Patients by Emergency Severity" />
+                <PieChart fx:id="chartEmergencyLevel" legendSide="BOTTOM" VBox.vgrow="ALWAYS" />
+            </VBox>
+
+            <!-- Chart 2: Patient Status Distribution Bar Chart -->
+            <VBox prefHeight="320.0" styleClass="metric-card" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS">
+                <Label style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #0F172A;" text="Patient Status Distribution" />
+                <BarChart fx:id="chartPatientStatus" legendVisible="false" VBox.vgrow="ALWAYS">
+                    <xAxis>
+                        <CategoryAxis label="Status" />
+                    </xAxis>
+                    <yAxis>
+                        <NumberAxis label="Patient Count" />
+                    </yAxis>
+                </BarChart>
+            </VBox>
+        </GridPane>
+
+        <!-- Chart 3: Waiting Time Analytics -->
+        <VBox prefHeight="280.0" styleClass="metric-card">
+            <Label style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #0F172A;" text="Average Queue Waiting Time by Severity (Minutes)" />
+            <BarChart fx:id="chartWaitingTime" legendVisible="false" VBox.vgrow="ALWAYS">
+                <xAxis>
+                    <CategoryAxis label="Emergency Severity" />
+                </xAxis>
+                <yAxis>
+                    <NumberAxis label="Avg Wait (Minutes)" />
+                </yAxis>
+            </BarChart>
+        </VBox>
+    </VBox>
+</ScrollPane>

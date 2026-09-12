@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Priority?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<ScrollPane fitToWidth="true" stylesheets="@../css/main.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.hospital.controller.PatientManagementController">
+    <VBox spacing="18.0" styleClass="content-area">
+        <!-- Title & Action Bar -->
+        <HBox alignment="CENTER_LEFT" spacing="12.0">
+            <VBox spacing="2.0">
+                <Label style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #0F172A;" text="Emergency Patient Directory &amp; Records" />
+                <Label style="-fx-font-size: 12px; -fx-text-fill: #64748B;" text="Search, filter, inspect profiles, and audit full triage histories across all department admissions" />
+            </VBox>
+            <Region HBox.hgrow="ALWAYS" />
+            <Button onAction="#handleNewRegistration" styleClass="btn-primary" text="➕ Register Patient" />
+            <Button onAction="#handleRefresh" styleClass="btn-secondary" text="🔄 Refresh" />
+        </HBox>
+
+        <!-- Search & Filter Controls -->
+        <HBox alignment="CENTER_LEFT" spacing="12.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 8px; -fx-border-color: #E2E8F0; -fx-border-radius: 8px; -fx-padding: 12px 16px;">
+            <TextField fx:id="txtSearch" prefWidth="280.0" promptText="🔍  Search by Name, Code, Token, Phone..." />
+
+            <ComboBox fx:id="cmbFilterLevel" prefWidth="180.0" promptText="Filter by Severity" />
+            <ComboBox fx:id="cmbFilterStatus" prefWidth="170.0" promptText="Filter by Status" />
+
+            <Button onAction="#handleResetFilters" styleClass="btn-secondary" text="Reset" />
+
+            <Region HBox.hgrow="ALWAYS" />
+            <Label fx:id="lblTotalCountBadge" styleClass="badge-token" text="Total: 0 Patients" />
+        </HBox>
+
+        <!-- Main Patients Table -->
+        <TableView fx:id="tblPatients" minHeight="460.0" prefHeight="500.0">
+            <columns>
+                <TableColumn fx:id="colCode" prefWidth="85.0" text="Code" />
+                <TableColumn fx:id="colToken" prefWidth="95.0" text="Token" />
+                <TableColumn fx:id="colName" prefWidth="190.0" text="Patient Full Name" />
+                <TableColumn fx:id="colAgeGender" prefWidth="95.0" text="Age/Sex" />
+                <TableColumn fx:id="colPhone" prefWidth="120.0" text="Phone" />
+                <TableColumn fx:id="colEmergency" prefWidth="130.0" text="Emergency Level" />
+                <TableColumn fx:id="colArrival" prefWidth="130.0" text="Arrival Time" />
+                <TableColumn fx:id="colDoctor" prefWidth="160.0" text="Assigned Doctor" />
+                <TableColumn fx:id="colStatus" prefWidth="120.0" text="Current Status" />
+                <TableColumn fx:id="colAction" prefWidth="110.0" text="Profile" />
+            </columns>
+            <placeholder>
+                <Label style="-fx-text-fill: #94A3B8;" text="No patients found matching the criteria." />
+            </placeholder>
+        </TableView>
+    </VBox>
+</ScrollPane>

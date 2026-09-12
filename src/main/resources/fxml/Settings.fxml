@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Priority?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<ScrollPane fitToWidth="true" stylesheets="@../css/main.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.hospital.controller.SettingsController">
+    <VBox spacing="18.0" styleClass="content-area">
+        <!-- Title & Action Bar -->
+        <HBox alignment="CENTER_LEFT" spacing="12.0">
+            <VBox spacing="2.0">
+                <Label style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #0F172A;" text="System Settings &amp; Operational Thresholds" />
+                <Label style="-fx-font-size: 12px; -fx-text-fill: #64748B;" text="Configure triage waiting-time overdue alert limits, automatic queue refresh interval, and database status" />
+            </VBox>
+            <Region HBox.hgrow="ALWAYS" />
+            <Button onAction="#handleSaveSettings" styleClass="btn-primary" text="💾 Save Configuration" />
+        </HBox>
+
+        <!-- Card 1: Waiting Time Thresholds -->
+        <VBox spacing="14.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 10px; -fx-border-color: #E2E8F0; -fx-border-radius: 10px; -fx-padding: 20px;">
+            <Label style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #0284C7;" text="1. Triage Waiting-Time Overdue Thresholds (Minutes)" />
+            <Label style="-fx-font-size: 12px; -fx-text-fill: #64748B;" text="When a patient in the live queue exceeds these wait limits, an overdue alert banner is displayed." />
+
+            <GridPane hgap="16.0" vgap="12.0">
+                <VBox spacing="4.0" GridPane.columnIndex="0" GridPane.hgrow="ALWAYS">
+                    <Label styleClass="form-label" text="Critical (Priority 1) Max Wait" />
+                    <TextField fx:id="txtCriticalThreshold" promptText="15" />
+                </VBox>
+
+                <VBox spacing="4.0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS">
+                    <Label styleClass="form-label" text="High (Priority 2) Max Wait" />
+                    <TextField fx:id="txtHighThreshold" promptText="30" />
+                </VBox>
+
+                <VBox spacing="4.0" GridPane.columnIndex="2" GridPane.hgrow="ALWAYS">
+                    <Label styleClass="form-label" text="Medium (Priority 3) Max Wait" />
+                    <TextField fx:id="txtMediumThreshold" promptText="60" />
+                </VBox>
+
+                <VBox spacing="4.0" GridPane.columnIndex="3" GridPane.hgrow="ALWAYS">
+                    <Label styleClass="form-label" text="Low (Priority 4) Max Wait" />
+                    <TextField fx:id="txtLowThreshold" promptText="120" />
+                </VBox>
+            </GridPane>
+        </VBox>
+
+        <!-- Card 2: Queue Auto-Refresh -->
+        <VBox spacing="14.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 10px; -fx-border-color: #E2E8F0; -fx-border-radius: 10px; -fx-padding: 20px;">
+            <Label style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #0284C7;" text="2. Live Queue Refresh Cadence" />
+            
+            <HBox alignment="CENTER_LEFT" spacing="16.0">
+                <VBox spacing="4.0">
+                    <Label styleClass="form-label" text="Queue Auto-Refresh Interval (Seconds)" />
+                    <TextField fx:id="txtRefreshInterval" prefWidth="180.0" promptText="10" />
+                </VBox>
+                <Label style="-fx-font-size: 12px; -fx-text-fill: #64748B;" text="Recommended: 5 to 15 seconds to prevent excessive queries." />
+            </HBox>
+        </VBox>
+
+        <!-- Card 3: Database Connection Status -->
+        <VBox spacing="14.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 10px; -fx-border-color: #E2E8F0; -fx-border-radius: 10px; -fx-padding: 20px;">
+            <Label style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #0284C7;" text="3. Relational Database Connectivity" />
+
+            <GridPane hgap="16.0" vgap="12.0">
+                <VBox spacing="4.0" GridPane.columnIndex="0" GridPane.hgrow="ALWAYS">
+                    <Label styleClass="form-label" text="Connection Mode" />
+                    <Label fx:id="lblDbMode" style="-fx-font-weight: bold; -fx-font-size: 14px;" text="MySQL Local Instance" />
+                </VBox>
+
+                <VBox spacing="4.0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS">
+                    <Label styleClass="form-label" text="JDBC URL" />
+                    <Label fx:id="lblDbUrl" style="-fx-font-size: 12px; -fx-text-fill: #64748B;" text="jdbc:mysql://localhost:3306/hospital_emergency_system" />
+                </VBox>
+
+                <VBox spacing="4.0" GridPane.columnIndex="2" GridPane.hgrow="ALWAYS">
+                    <Label styleClass="form-label" text="Database Status" />
+                    <Label fx:id="lblDbStatusText" style="-fx-font-weight: bold; -fx-text-fill: #059669;" text="CONNECTED" />
+                </VBox>
+            </GridPane>
+
+            <HBox spacing="10.0">
+                <Button onAction="#handleTestConnection" styleClass="btn-secondary" text="🔌 Test Connection Now" />
+            </HBox>
+        </VBox>
+    </VBox>
+</ScrollPane>

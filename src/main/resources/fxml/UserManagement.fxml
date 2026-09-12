@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Priority?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<ScrollPane fitToWidth="true" stylesheets="@../css/main.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.hospital.controller.UserManagementController">
+    <VBox spacing="18.0" styleClass="content-area">
+        <!-- Title & Action Bar -->
+        <HBox alignment="CENTER_LEFT" spacing="12.0">
+            <VBox spacing="2.0">
+                <Label style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #0F172A;" text="Staff &amp; User Account Administration" />
+                <Label style="-fx-font-size: 12px; -fx-text-fill: #64748B;" text="Manage hospital staff credentials, roles (Admin, Doctor, Nurse), and system authorization" />
+            </VBox>
+            <Region HBox.hgrow="ALWAYS" />
+            <Button onAction="#handleRefresh" styleClass="btn-secondary" text="🔄 Refresh" />
+        </HBox>
+
+        <!-- New User Creation Form Card -->
+        <VBox spacing="14.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 10px; -fx-border-color: #E2E8F0; -fx-border-radius: 10px; -fx-padding: 20px;">
+            <Label style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #0284C7;" text="Create New Staff Account" />
+
+            <GridPane hgap="16.0" vgap="12.0">
+                <VBox spacing="4.0" GridPane.columnIndex="0" GridPane.hgrow="ALWAYS">
+                    <Label styleClass="form-label" text="Full Legal Name *" />
+                    <TextField fx:id="txtFullName" promptText="e.g. Dr. Emily Hayes" />
+                </VBox>
+
+                <VBox spacing="4.0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS">
+                    <Label styleClass="form-label" text="Username *" />
+                    <TextField fx:id="txtUsername" promptText="e.g. emily.hayes" />
+                </VBox>
+
+                <VBox spacing="4.0" GridPane.columnIndex="2" GridPane.hgrow="ALWAYS">
+                    <Label styleClass="form-label" text="Initial Password *" />
+                    <PasswordField fx:id="txtPassword" promptText="••••••••" />
+                </VBox>
+
+                <VBox spacing="4.0" GridPane.columnIndex="0" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1">
+                    <Label styleClass="form-label" text="Role Assignment *" />
+                    <ComboBox fx:id="cmbRole" maxWidth="Infinity" promptText="Select Role" />
+                </VBox>
+
+                <VBox spacing="4.0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1">
+                    <Label styleClass="form-label" text="Phone Number" />
+                    <TextField fx:id="txtPhone" promptText="e.g. 555-0144" />
+                </VBox>
+
+                <VBox spacing="4.0" GridPane.columnIndex="2" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1">
+                    <Label styleClass="form-label" text="Email Address" />
+                    <TextField fx:id="txtEmail" promptText="e.g. doctor@hospital.org" />
+                </VBox>
+            </GridPane>
+
+            <HBox alignment="CENTER_RIGHT" spacing="10.0">
+                <Button onAction="#handleClearForm" styleClass="btn-secondary" text="Clear" />
+                <Button onAction="#handleCreateUser" styleClass="btn-primary" text="➕ Add Staff Member" />
+            </HBox>
+        </VBox>
+
+        <!-- Existing Users Table -->
+        <VBox spacing="10.0">
+            <Label style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #0F172A;" text="Authorized System Users" />
+            <TableView fx:id="tblUsers" minHeight="300.0" prefHeight="340.0">
+                <columns>
+                    <TableColumn fx:id="colUserId" prefWidth="70.0" text="ID" />
+                    <TableColumn fx:id="colUsername" prefWidth="130.0" text="Username" />
+                    <TableColumn fx:id="colFullName" prefWidth="200.0" text="Full Name" />
+                    <TableColumn fx:id="colRole" prefWidth="120.0" text="Role" />
+                    <TableColumn fx:id="colPhone" prefWidth="130.0" text="Phone" />
+                    <TableColumn fx:id="colEmail" prefWidth="200.0" text="Email" />
+                    <TableColumn fx:id="colActive" prefWidth="90.0" text="Status" />
+                    <TableColumn fx:id="colAction" prefWidth="120.0" text="Action" />
+                </columns>
+                <placeholder>
+                    <Label style="-fx-text-fill: #94A3B8;" text="No user accounts found." />
+                </placeholder>
+            </TableView>
+        </VBox>
+    </VBox>
+</ScrollPane>

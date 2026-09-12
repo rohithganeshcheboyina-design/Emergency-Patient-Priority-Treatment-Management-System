@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Priority?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<ScrollPane fitToWidth="true" stylesheets="@../css/main.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.hospital.controller.AboutController">
+    <VBox spacing="18.0" styleClass="content-area">
+        <!-- Header -->
+        <HBox alignment="CENTER_LEFT" spacing="12.0">
+            <VBox spacing="2.0">
+                <Label style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #0F172A;" text="About System &amp; Medical Disclaimer" />
+                <Label style="-fx-font-size: 12px; -fx-text-fill: #64748B;" text="System specifications, Data Structures &amp; Algorithms foundation, and institutional disclaimer" />
+            </VBox>
+        </HBox>
+
+        <!-- Prominent Medical Disclaimer Banner -->
+        <VBox spacing="8.0" style="-fx-background-color: #FEF2F2; -fx-border-color: #EF4444; -fx-border-radius: 10px; -fx-background-radius: 10px; -fx-padding: 20px;">
+            <HBox alignment="CENTER_LEFT" spacing="10.0">
+                <Label style="-fx-font-size: 20px;" text="⚠️" />
+                <Label style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #DC2626;" text="IMPORTANT MEDICAL DISCLAIMER" />
+            </HBox>
+            <Label style="-fx-font-size: 13px; -fx-text-fill: #991B1B; -fx-line-spacing: 4px;" text="This software is an academic triage and emergency queue management project. It is intended to demonstrate software engineering, relational database design, Object-Oriented Programming (OOP), and Data Structures &amp; Algorithms (DSA) priority scheduling concepts. Emergency classification does not constitute medical diagnosis and does not replace professional medical judgment." wrapText="true" />
+        </VBox>
+
+        <!-- System Architecture & DSA Details Card -->
+        <VBox spacing="14.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 10px; -fx-border-color: #E2E8F0; -fx-border-radius: 10px; -fx-padding: 24px;">
+            <Label style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #0F172A;" text="System Architecture &amp; Core DSA Priority Queue" />
+            
+            <VBox spacing="6.0">
+                <Label style="-fx-font-weight: bold; -fx-text-fill: #0284C7;" text="1. Priority Queue Scheduling Rules:" />
+                <Label style="-fx-font-size: 13px; -fx-text-fill: #334155;" text="• Primary Sort: Lower priority number comes first (1 = CRITICAL &lt; 2 = HIGH &lt; 3 = MEDIUM &lt; 4 = LOW)." />
+                <Label style="-fx-font-size: 13px; -fx-text-fill: #334155;" text="• Secondary Sort: For patients with equal priority, earlier arrival timestamp comes first (FIFO within priority level)." />
+                <Label style="-fx-font-size: 13px; -fx-text-fill: #334155;" text="• Dynamic Re-heap: Synchronized upon patient registration, priority change, treatment start, and discharge." />
+            </VBox>
+
+            <Separator />
+
+            <VBox spacing="6.0">
+                <Label style="-fx-font-weight: bold; -fx-text-fill: #0284C7;" text="2. Technology Stack &amp; Design Patterns:" />
+                <Label style="-fx-font-size: 13px; -fx-text-fill: #334155;" text="• Language: Java 17 LTS / Modern Java SE" />
+                <Label style="-fx-font-size: 13px; -fx-text-fill: #334155;" text="• GUI Framework: JavaFX 21 + FXML + CSS" />
+                <Label style="-fx-font-size: 13px; -fx-text-fill: #334155;" text="• Database Persistence: MySQL 8.0+ with JDBC PreparedStatements &amp; Connection Pooling" />
+                <Label style="-fx-font-size: 13px; -fx-text-fill: #334155;" text="• Offline / Testing Mode: Embedded in-memory database with automatic schema bootstrap" />
+                <Label style="-fx-font-size: 13px; -fx-text-fill: #334155;" text="• Security: BCrypt salted password hashing, Role-Based Access Control (RBAC), SQL injection prevention" />
+                <Label style="-fx-font-size: 13px; -fx-text-fill: #334155;" text="• Architecture: Layered MVC + Service + DAO design with clean encapsulation and OOP polymorphism" />
+            </VBox>
+
+            <Separator />
+
+            <VBox spacing="6.0">
+                <Label style="-fx-font-weight: bold; -fx-text-fill: #0284C7;" text="3. Authorized User Roles &amp; Workflows:" />
+                <Label style="-fx-font-size: 13px; -fx-text-fill: #334155;" text="• Admin: Complete department oversight, staff management, audit activity logs, full reporting &amp; analytics." />
+                <Label style="-fx-font-size: 13px; -fx-text-fill: #334155;" text="• Doctor: Clinical workstation, NEXT PATIENT triage intake card, treatment station, discharge workflow." />
+                <Label style="-fx-font-size: 13px; -fx-text-fill: #334155;" text="• Nurse: Patient emergency registration, symptom recording, severity assessment, live queue monitoring." />
+            </VBox>
+        </VBox>
+    </VBox>
+</ScrollPane>

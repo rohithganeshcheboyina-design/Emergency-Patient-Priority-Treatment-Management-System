@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Priority?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<ScrollPane fitToWidth="true" stylesheets="@../css/main.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.hospital.controller.PatientDetailController">
+    <VBox spacing="18.0" styleClass="content-area">
+        <!-- Top Navigation & Action Header -->
+        <HBox alignment="CENTER_LEFT" spacing="14.0">
+            <Button onAction="#handleBack" styleClass="btn-secondary" text="⬅ Back to Directory" />
+            <VBox spacing="2.0">
+                <HBox alignment="CENTER_LEFT" spacing="10.0">
+                    <Label fx:id="lblHeaderName" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #0F172A;" text="Patient Full Name" />
+                    <Label fx:id="lblHeaderToken" styleClass="badge-token" text="ER-001" />
+                    <Label fx:id="lblHeaderPriority" styleClass="badge-critical" text="CRITICAL (P1)" />
+                    <Label fx:id="lblHeaderStatus" styleClass="badge-status" text="WAITING" />
+                </HBox>
+                <Label fx:id="lblHeaderSub" style="-fx-font-size: 12px; -fx-text-fill: #64748B;" text="Code: P0001 | Registered: 2026-09-12 10:05" />
+            </VBox>
+            <Region HBox.hgrow="ALWAYS" />
+
+            <!-- Dynamic Workflow Action Buttons -->
+            <Button fx:id="btnActionCall" onAction="#handleCallPatient" styleClass="btn-secondary" text="📢 Call to Bay" />
+            <Button fx:id="btnActionStartTreatment" onAction="#handleStartTreatment" styleClass="btn-primary" text="🩺 Start Treatment" />
+            <Button fx:id="btnActionCompleteTreatment" onAction="#handleCompleteTreatment" styleClass="btn-success" text="✅ Complete Care" />
+            <Button fx:id="btnActionDischarge" onAction="#handleDischarge" styleClass="btn-danger" text="🚪 Discharge" />
+        </HBox>
+
+        <!-- Profile Tabs -->
+        <TabPane fx:id="tabPane" prefHeight="540.0" tabClosingPolicy="UNAVAILABLE">
+            <!-- TAB 1: DEMOGRAPHICS -->
+            <Tab text="  👤 Demographics &amp; Intake  ">
+                <VBox spacing="16.0" style="-fx-background-color: #FFFFFF; -fx-padding: 24px; -fx-border-color: #E2E8F0; -fx-border-width: 0 1px 1px 1px; -fx-background-radius: 0 0 8px 8px;">
+                    <Label style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #0284C7;" text="Intake &amp; Demographic Profile" />
+                    <GridPane hgap="24.0" vgap="14.0">
+                        <VBox spacing="2.0" GridPane.columnIndex="0" GridPane.hgrow="ALWAYS">
+                            <Label styleClass="metric-card-title" text="PATIENT ID &amp; CODE" />
+                            <Label fx:id="lblPatientCode" style="-fx-font-size: 15px; -fx-font-weight: bold;" text="P0001" />
+                        </VBox>
+                        <VBox spacing="2.0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS">
+                            <Label styleClass="metric-card-title" text="EMERGENCY TOKEN" />
+                            <Label fx:id="lblTokenNumber" style="-fx-font-size: 15px; -fx-font-weight: bold;" text="ER-001" />
+                        </VBox>
+                        <VBox spacing="2.0" GridPane.columnIndex="2" GridPane.hgrow="ALWAYS">
+                            <Label styleClass="metric-card-title" text="ARRIVAL TIME" />
+                            <Label fx:id="lblArrivalTime" style="-fx-font-size: 14px;" text="10:05 AM" />
+                        </VBox>
+                        <VBox spacing="2.0" GridPane.columnIndex="3" GridPane.hgrow="ALWAYS">
+                            <Label styleClass="metric-card-title" text="TOTAL WAIT TIME" />
+                            <Label fx:id="lblWaitTime" style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #DC2626;" text="25 min" />
+                        </VBox>
+
+                        <VBox spacing="2.0" GridPane.columnIndex="0" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1">
+                            <Label styleClass="metric-card-title" text="FULL LEGAL NAME" />
+                            <Label fx:id="lblName" style="-fx-font-size: 15px; -fx-font-weight: bold;" text="Rahul Sharma" />
+                        </VBox>
+                        <VBox spacing="2.0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1">
+                            <Label styleClass="metric-card-title" text="AGE &amp; GENDER" />
+                            <Label fx:id="lblAgeGender" style="-fx-font-size: 14px;" text="54 / Male" />
+                        </VBox>
+                        <VBox spacing="2.0" GridPane.columnIndex="2" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1">
+                            <Label styleClass="metric-card-title" text="CONTACT PHONE" />
+                            <Label fx:id="lblPhone" style="-fx-font-size: 14px;" text="555-0201" />
+                        </VBox>
+                        <VBox spacing="2.0" GridPane.columnIndex="3" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1">
+                            <Label styleClass="metric-card-title" text="BLOOD GROUP" />
+                            <Label fx:id="lblBloodGroup" style="-fx-font-size: 14px; -fx-font-weight: bold;" text="O+" />
+                        </VBox>
+
+                        <VBox spacing="2.0" GridPane.columnIndex="0" GridPane.columnSpan="4" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2">
+                            <Label styleClass="metric-card-title" text="RESIDENTIAL ADDRESS" />
+                            <Label fx:id="lblAddress" style="-fx-font-size: 14px;" text="42 MG Road, Metro District" />
+                        </VBox>
+                    </GridPane>
+                </VBox>
+            </Tab>
+
+            <!-- TAB 2: TRIAGE & SYMPTOMS -->
+            <Tab text="  ⚡ Triage Assessment  ">
+                <VBox spacing="16.0" style="-fx-background-color: #FFFFFF; -fx-padding: 24px; -fx-border-color: #E2E8F0; -fx-border-width: 0 1px 1px 1px; -fx-background-radius: 0 0 8px 8px;">
+                    <Label style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #0284C7;" text="Triage Assessment Audit" />
+                    
+                    <VBox spacing="6.0">
+                        <Label styleClass="metric-card-title" text="REPORTED SYMPTOMS &amp; CHIEF COMPLAINT" />
+                        <Label fx:id="lblSymptoms" style="-fx-background-color: #F8FAFC; -fx-background-radius: 8px; -fx-padding: 14px; -fx-font-size: 14px; -fx-text-fill: #1E293B;" text="Symptoms..." wrapText="true" />
+                    </VBox>
+
+                    <GridPane hgap="24.0" vgap="14.0">
+                        <VBox spacing="2.0" GridPane.columnIndex="0" GridPane.hgrow="ALWAYS">
+                            <Label styleClass="metric-card-title" text="TRIAGE LEVEL" />
+                            <Label fx:id="lblTriageLevel" style="-fx-font-size: 15px; -fx-font-weight: bold;" text="CRITICAL" />
+                        </VBox>
+                        <VBox spacing="2.0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS">
+                            <Label styleClass="metric-card-title" text="ASSIGNED PRIORITY" />
+                            <Label fx:id="lblTriagePriority" style="-fx-font-size: 15px; -fx-font-weight: bold;" text="1" />
+                        </VBox>
+                        <VBox spacing="2.0" GridPane.columnIndex="2" GridPane.hgrow="ALWAYS">
+                            <Label styleClass="metric-card-title" text="ASSIGNED DOCTOR" />
+                            <Label fx:id="lblAssignedDoctor" style="-fx-font-size: 14px;" text="Dr. Robert Vance, MD" />
+                        </VBox>
+                    </GridPane>
+
+                    <!-- Disclaimer -->
+                    <HBox alignment="CENTER_LEFT" spacing="8.0" styleClass="disclaimer-banner">
+                        <Label style="-fx-font-size: 13px;" text="ℹ️" />
+                        <Label styleClass="disclaimer-text" text="Emergency priority is a triage support classification and does not replace professional medical judgment." />
+                    </HBox>
+                </VBox>
+            </Tab>
+
+            <!-- TAB 3: TREATMENTS -->
+            <Tab text="  🩺 Treatment Records  ">
+                <VBox spacing="14.0" style="-fx-background-color: #FFFFFF; -fx-padding: 20px; -fx-border-color: #E2E8F0; -fx-border-width: 0 1px 1px 1px; -fx-background-radius: 0 0 8px 8px;">
+                    <Label style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #0284C7;" text="Clinical Procedures &amp; Interventions" />
+                    <TableView fx:id="tblTreatments" prefHeight="380.0">
+                        <columns>
+                            <TableColumn fx:id="colTrId" prefWidth="70.0" text="ID" />
+                            <TableColumn fx:id="colTrDoctor" prefWidth="180.0" text="Attending Doctor" />
+                            <TableColumn fx:id="colTrStart" prefWidth="150.0" text="Start Time" />
+                            <TableColumn fx:id="colTrEnd" prefWidth="150.0" text="End Time" />
+                            <TableColumn fx:id="colTrStatus" prefWidth="120.0" text="Status" />
+                            <TableColumn fx:id="colTrNotes" prefWidth="300.0" text="Clinical Care Notes" />
+                        </columns>
+                        <placeholder>
+                            <Label style="-fx-text-fill: #94A3B8;" text="No treatment records found for this patient." />
+                        </placeholder>
+                    </TableView>
+                </VBox>
+            </Tab>
+
+            <!-- TAB 4: STATUS HISTORY AUDIT TIMELINE -->
+            <Tab text="  📋 Status History Audit Timeline  ">
+                <VBox spacing="14.0" style="-fx-background-color: #FFFFFF; -fx-padding: 20px; -fx-border-color: #E2E8F0; -fx-border-width: 0 1px 1px 1px; -fx-background-radius: 0 0 8px 8px;">
+                    <Label style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #0284C7;" text="Audit Trail of Workflow Status Transitions" />
+                    <TableView fx:id="tblStatusHistory" prefHeight="380.0">
+                        <columns>
+                            <TableColumn fx:id="colHistId" prefWidth="60.0" text="#" />
+                            <TableColumn fx:id="colHistOld" prefWidth="120.0" text="Previous Status" />
+                            <TableColumn fx:id="colHistNew" prefWidth="130.0" text="New Status" />
+                            <TableColumn fx:id="colHistBy" prefWidth="160.0" text="Changed By Staff" />
+                            <TableColumn fx:id="colHistTime" prefWidth="160.0" text="Timestamp" />
+                            <TableColumn fx:id="colHistRemarks" prefWidth="350.0" text="Remarks &amp; Transition Reason" />
+                        </columns>
+                        <placeholder>
+                            <Label style="-fx-text-fill: #94A3B8;" text="No history entries recorded." />
+                        </placeholder>
+                    </TableView>
+                </VBox>
+            </Tab>
+        </TabPane>
+    </VBox>
+</ScrollPane>

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Priority?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<ScrollPane fitToWidth="true" stylesheets="@../css/main.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.hospital.controller.TreatmentController">
+    <VBox spacing="18.0" styleClass="content-area">
+        <!-- Title & Action Bar -->
+        <HBox alignment="CENTER_LEFT" spacing="12.0">
+            <VBox spacing="2.0">
+                <Label style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #0F172A;" text="Emergency Clinical Treatment Station" />
+                <Label style="-fx-font-size: 12px; -fx-text-fill: #64748B;" text="Manage attending patients, update clinical intervention notes, complete treatments, and process discharges" />
+            </VBox>
+            <Region HBox.hgrow="ALWAYS" />
+            <Button onAction="#handleRefresh" styleClass="btn-secondary" text="🔄 Refresh" />
+        </HBox>
+
+        <!-- Treatments Overview Table -->
+        <VBox spacing="10.0">
+            <HBox alignment="CENTER_LEFT" spacing="12.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 8px; -fx-border-color: #E2E8F0; -fx-border-radius: 8px; -fx-padding: 10px 16px;">
+                <Label styleClass="form-label" text="Filter Treatment Status:" />
+                <ComboBox fx:id="cmbStatusFilter" prefWidth="180.0" promptText="Filter Status" />
+                <Region HBox.hgrow="ALWAYS" />
+                <Label fx:id="lblTreatmentCountBadge" styleClass="badge-token" text="0 Active Cases" />
+            </HBox>
+
+            <TableView fx:id="tblTreatments" minHeight="260.0" prefHeight="300.0">
+                <columns>
+                    <TableColumn fx:id="colToken" prefWidth="90.0" text="Token" />
+                    <TableColumn fx:id="colCode" prefWidth="80.0" text="Code" />
+                    <TableColumn fx:id="colPatientName" prefWidth="180.0" text="Patient Name" />
+                    <TableColumn fx:id="colEmergency" prefWidth="130.0" text="Emergency Level" />
+                    <TableColumn fx:id="colDoctor" prefWidth="160.0" text="Attending Doctor" />
+                    <TableColumn fx:id="colStartTime" prefWidth="130.0" text="Start Time" />
+                    <TableColumn fx:id="colStatus" prefWidth="120.0" text="Treatment Status" />
+                    <TableColumn fx:id="colNotes" prefWidth="250.0" text="Clinical Notes" />
+                </columns>
+                <placeholder>
+                    <Label style="-fx-text-fill: #94A3B8;" text="No treatments matching criteria." />
+                </placeholder>
+            </TableView>
+        </VBox>
+
+        <!-- Selected Treatment Quick Action Card -->
+        <VBox fx:id="boxTreatmentActions" spacing="12.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 10px; -fx-border-color: #0284C7; -fx-border-radius: 10px; -fx-padding: 20px;">
+            <Label style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #0F172A;" text="Clinical Note Update &amp; Action for Selected Patient" />
+
+            <GridPane hgap="16.0" vgap="10.0">
+                <VBox spacing="4.0" GridPane.columnIndex="0" GridPane.hgrow="ALWAYS">
+                    <Label styleClass="form-label" text="Selected Patient:" />
+                    <Label fx:id="lblSelectedPatientInfo" style="-fx-font-weight: bold; -fx-font-size: 14px; -fx-text-fill: #0284C7;" text="Select a row in the table above" />
+                </VBox>
+            </GridPane>
+
+            <VBox spacing="4.0">
+                <Label styleClass="form-label" text="Add / Append Clinical Notes:" />
+                <TextArea fx:id="txtClinicalNotes" prefRowCount="3" promptText="Enter clinical observations, administered medications, diagnostic results, or discharge instructions..." wrapText="true" />
+            </VBox>
+
+            <HBox alignment="CENTER_RIGHT" spacing="12.0">
+                <Button onAction="#handleSaveNotes" styleClass="btn-secondary" text="💾 Save Notes" />
+                <Button fx:id="btnComplete" onAction="#handleComplete" styleClass="btn-success" text="✅ Complete Treatment" />
+                <Button fx:id="btnDischarge" onAction="#handleDischarge" styleClass="btn-danger" text="🚪 Discharge Patient" />
+            </HBox>
+        </VBox>
+    </VBox>
+</ScrollPane>

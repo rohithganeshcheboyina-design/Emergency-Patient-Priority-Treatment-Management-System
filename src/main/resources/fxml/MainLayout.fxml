@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Priority?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane prefHeight="780.0" prefWidth="1200.0" stylesheets="@../css/main.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.hospital.controller.MainLayoutController">
+    <!-- LEFT SIDEBAR -->
+    <left>
+        <VBox spacing="10.0" styleClass="sidebar">
+            <padding>
+                <Insets bottom="16.0" left="14.0" right="14.0" top="20.0" />
+            </padding>
+            
+            <!-- App Branding Header -->
+            <VBox spacing="4.0">
+                <HBox alignment="CENTER_LEFT" spacing="8.0">
+                    <Label style="-fx-font-size: 22px;" text="🏥" />
+                    <Label styleClass="sidebar-brand-title" text="HE-PPMS" />
+                </HBox>
+                <Label styleClass="sidebar-brand-sub" text="Emergency Triage &amp; Priority Queue" />
+            </VBox>
+
+            <Separator opacity="0.15" />
+
+            <!-- Current User Badge -->
+            <VBox spacing="4.0" style="-fx-background-color: #1E293B; -fx-background-radius: 8px; -fx-padding: 10px;">
+                <Label fx:id="lblUserFullName" style="-fx-text-fill: #FFFFFF; -fx-font-weight: bold; -fx-font-size: 13px;" text="User Name" />
+                <HBox alignment="CENTER_LEFT" spacing="6.0">
+                    <Label fx:id="lblUserRole" styleClass="sidebar-role-badge" text="ROLE" />
+                    <Label fx:id="lblUsername" style="-fx-text-fill: #94A3B8; -fx-font-size: 11px;" text="@username" />
+                </HBox>
+            </VBox>
+
+            <Separator opacity="0.15" />
+
+            <!-- Navigation Buttons Scrollable if needed -->
+            <ScrollPane fitToWidth="true" hbarPolicy="NEVER" style="-fx-background-color: transparent; -fx-background: transparent; -fx-border-color: transparent;" vbarPolicy="AS_NEEDED" VBox.vgrow="ALWAYS">
+                <VBox spacing="6.0">
+                    <Button fx:id="btnNavDashboard" maxWidth="Infinity" onAction="#handleNavDashboard" styleClass="sidebar-nav-btn, sidebar-nav-btn-active" text="📊  Dashboard" />
+                    <Button fx:id="btnNavQueue" maxWidth="Infinity" onAction="#handleNavQueue" styleClass="sidebar-nav-btn" text="⚡  Live Emergency Queue" />
+                    <Button fx:id="btnNavRegister" maxWidth="Infinity" onAction="#handleNavRegister" styleClass="sidebar-nav-btn" text="➕  Patient Registration" />
+                    <Button fx:id="btnNavPatients" maxWidth="Infinity" onAction="#handleNavPatients" styleClass="sidebar-nav-btn" text="👥  Patient Directory" />
+                    <Button fx:id="btnNavTreatment" maxWidth="Infinity" onAction="#handleNavTreatment" styleClass="sidebar-nav-btn" text="🩺  Treatment Station" />
+                    <Button fx:id="btnNavReports" maxWidth="Infinity" onAction="#handleNavReports" styleClass="sidebar-nav-btn" text="📈  Reports &amp; Analytics" />
+                    <Button fx:id="btnNavLogs" maxWidth="Infinity" onAction="#handleNavLogs" styleClass="sidebar-nav-btn" text="📋  Activity Logs" />
+                    <Button fx:id="btnNavUsers" maxWidth="Infinity" onAction="#handleNavUsers" styleClass="sidebar-nav-btn" text="👤  Staff Management" />
+                    <Button fx:id="btnNavSettings" maxWidth="Infinity" onAction="#handleNavSettings" styleClass="sidebar-nav-btn" text="⚙️  System Settings" />
+                    <Button fx:id="btnNavAbout" maxWidth="Infinity" onAction="#handleNavAbout" styleClass="sidebar-nav-btn" text="ℹ️  About &amp; Disclaimer" />
+                </VBox>
+            </ScrollPane>
+
+            <Separator opacity="0.15" />
+
+            <!-- Logout Button -->
+            <Button fx:id="btnLogout" maxWidth="Infinity" onAction="#handleLogout" styleClass="sidebar-logout-btn" text="🚪  Sign Out" />
+        </VBox>
+    </left>
+
+    <!-- CENTER AREA -->
+    <center>
+        <BorderPane>
+            <!-- TOP HEADER -->
+            <top>
+                <HBox alignment="CENTER_LEFT" spacing="14.0" styleClass="top-header">
+                    <Label fx:id="lblHeaderTitle" styleClass="header-title" text="Dashboard" />
+                    
+                    <Region HBox.hgrow="ALWAYS" />
+
+                    <!-- Live System Clock -->
+                    <Label fx:id="lblLiveClock" styleClass="header-clock" text="--:--:--" />
+
+                    <!-- Database connection chip -->
+                    <Label fx:id="lblDbStatus" styleClass="header-db-pill" text="DB: Connected" />
+
+                    <!-- Quick Logout Icon Button -->
+                    <Button onAction="#handleLogout" styleClass="btn-secondary" text="Logout" />
+                </HBox>
+            </top>
+
+            <!-- MAIN DYNAMIC CONTENT CONTAINER -->
+            <center>
+                <StackPane fx:id="contentStackPane" styleClass="content-area">
+                    <!-- Dynamic views are loaded here -->
+                    
+                    <!-- Notification Toast Overlay Container -->
+                    <VBox fx:id="notificationOverlay" alignment="TOP_CENTER" mouseTransparent="false" pickOnBounds="false" spacing="8.0" visible="false" StackPane.alignment="TOP_CENTER">
+                        <padding>
+                            <Insets top="16.0" />
+                        </padding>
+                    </VBox>
+                </StackPane>
+            </center>
+        </BorderPane>
+    </center>
+</BorderPane>

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Priority?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<HBox prefHeight="640.0" prefWidth="980.0" stylesheets="@../css/main.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.hospital.controller.LoginController">
+    <!-- LEFT BRANDING PANEL -->
+    <VBox alignment="CENTER_LEFT" prefWidth="440.0" spacing="20.0" style="-fx-background-color: #0F172A; -fx-padding: 40px;">
+        <Label style="-fx-font-size: 36px;" text="🏥" />
+        
+        <VBox spacing="6.0">
+            <Label style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #FFFFFF;" text="HE-PPMS" />
+            <Label style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #38BDF8;" text="Hospital Emergency Patient Priority Management System" wrapText="true" />
+            <Label style="-fx-font-size: 12px; -fx-text-fill: #94A3B8;" text="Real-time triage assessment, automated priority queue scheduling, and clinical workflow coordination." wrapText="true" />
+        </VBox>
+
+        <Separator opacity="0.15" />
+
+        <!-- Triage Priority Legend -->
+        <VBox spacing="10.0">
+            <Label style="-fx-text-fill: #CBD5E1; -fx-font-size: 12px; -fx-font-weight: bold;" text="TRIAGE CLASSIFICATION LEVELS" />
+            
+            <HBox alignment="CENTER_LEFT" spacing="10.0">
+                <Label styleClass="badge-critical" text="Priority 1 : CRITICAL" />
+                <Label style="-fx-text-fill: #94A3B8; -fx-font-size: 11px;" text="Immediate Life-Threatening" />
+            </HBox>
+
+            <HBox alignment="CENTER_LEFT" spacing="10.0">
+                <Label styleClass="badge-high" text="Priority 2 : HIGH" />
+                <Label style="-fx-text-fill: #94A3B8; -fx-font-size: 11px;" text="Severe Trauma / Deterioration" />
+            </HBox>
+
+            <HBox alignment="CENTER_LEFT" spacing="10.0">
+                <Label styleClass="badge-medium" text="Priority 3 : MEDIUM" />
+                <Label style="-fx-text-fill: #94A3B8; -fx-font-size: 11px;" text="Urgent Clinical Attention" />
+            </HBox>
+
+            <HBox alignment="CENTER_LEFT" spacing="10.0">
+                <Label styleClass="badge-low" text="Priority 4 : LOW" />
+                <Label style="-fx-text-fill: #94A3B8; -fx-font-size: 11px;" text="Stable / Non-Urgent" />
+            </HBox>
+        </VBox>
+
+        <Region VBox.vgrow="ALWAYS" />
+
+        <!-- Medical Disclaimer -->
+        <VBox spacing="4.0" style="-fx-background-color: #1E293B; -fx-background-radius: 6px; -fx-padding: 10px;">
+            <Label style="-fx-text-fill: #93C5FD; -fx-font-size: 10px; -fx-font-weight: bold;" text="⚠️ ACADEMIC &amp; TRIAGE DISCLAIMER" />
+            <Label style="-fx-text-fill: #94A3B8; -fx-font-size: 10px;" text="Triage priority is a support classification. Does not diagnose or replace professional medical judgment." wrapText="true" />
+        </VBox>
+    </VBox>
+
+    <!-- RIGHT LOGIN FORM PANEL -->
+    <VBox alignment="CENTER" spacing="18.0" style="-fx-background-color: #FFFFFF; -fx-padding: 50px;" HBox.hgrow="ALWAYS">
+        <VBox maxWidth="380.0" spacing="6.0">
+            <Label style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #0F172A;" text="Staff Sign In" />
+            <Label style="-fx-font-size: 13px; -fx-text-fill: #64748B;" text="Enter your authorized hospital credentials to proceed" />
+        </VBox>
+
+        <!-- Error Alert Banner -->
+        <Label fx:id="lblError" maxWidth="380.0" style="-fx-background-color: #FEE2E2; -fx-text-fill: #DC2626; -fx-border-color: #FCA5A5; -fx-border-radius: 6px; -fx-background-radius: 6px; -fx-padding: 8px 12px; -fx-font-size: 12px;" visible="false" wrapText="true" />
+
+        <!-- Form Fields -->
+        <VBox maxWidth="380.0" spacing="14.0">
+            <VBox spacing="5.0">
+                <Label styleClass="form-label" text="Username" />
+                <TextField fx:id="txtUsername" promptText="e.g. admin, doctor, nurse" />
+            </VBox>
+
+            <VBox spacing="5.0">
+                <Label styleClass="form-label" text="Password" />
+                <PasswordField fx:id="txtPassword" onAction="#handleLogin" promptText="••••••••" />
+            </VBox>
+
+            <VBox spacing="5.0">
+                <Label styleClass="form-label" text="Role Authorization" />
+                <ComboBox fx:id="cmbRole" maxWidth="Infinity" promptText="Select your role (or leave for auto)" />
+            </VBox>
+
+            <Button fx:id="btnLogin" maxWidth="Infinity" onAction="#handleLogin" prefHeight="38.0" styleClass="btn-primary" text="Sign In to Portal" />
+        </VBox>
+
+        <Separator maxWidth="380.0" />
+
+        <!-- Quick Demo Accounts Helper -->
+        <VBox maxWidth="380.0" spacing="8.0">
+            <Label style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #64748B;" text="QUICK DEMO CREDENTIALS (CLICK TO AUTO-FILL):" />
+            <HBox spacing="8.0">
+                <Button onAction="#fillAdminDemo" styleClass="btn-secondary" text="👑 Admin" HBox.hgrow="ALWAYS" />
+                <Button onAction="#fillDoctorDemo" styleClass="btn-secondary" text="🩺 Doctor" HBox.hgrow="ALWAYS" />
+                <Button onAction="#fillNurseDemo" styleClass="btn-secondary" text="💉 Nurse" HBox.hgrow="ALWAYS" />
+            </HBox>
+            <Label style="-fx-font-size: 10px; -fx-text-fill: #94A3B8;" text="Admin: admin/admin123 | Doctor: doctor/doctor123 | Nurse: nurse/nurse123" />
+        </VBox>
+    </VBox>
+</HBox>

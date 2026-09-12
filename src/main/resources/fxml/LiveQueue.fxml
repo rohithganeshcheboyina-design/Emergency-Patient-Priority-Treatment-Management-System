@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Priority?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<ScrollPane fitToWidth="true" stylesheets="@../css/main.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.hospital.controller.LiveQueueController">
+    <VBox spacing="18.0" styleClass="content-area">
+        <!-- Title & Action Bar -->
+        <HBox alignment="CENTER_LEFT" spacing="12.0">
+            <VBox spacing="2.0">
+                <HBox alignment="CENTER_LEFT" spacing="8.0">
+                    <Label style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #0F172A;" text="Live Emergency Priority Queue" />
+                    <Label styleClass="sidebar-role-badge" text="DSA QUEUE ACTIVE" />
+                </HBox>
+                <Label style="-fx-font-size: 12px; -fx-text-fill: #64748B;" text="Rule 1: Lower priority number first (Critical &lt; High &lt; Medium &lt; Low). Rule 2: Earlier arrival time first for equal priority." />
+            </VBox>
+            <Region HBox.hgrow="ALWAYS" />
+            <Button onAction="#handleRegisterPatient" styleClass="btn-primary" text="➕ Register Patient" />
+            <Button onAction="#handleRefresh" styleClass="btn-secondary" text="🔄 Refresh Queue" />
+        </HBox>
+
+        <!-- Live Queue Metrics Summary Bar -->
+        <GridPane hgap="14.0" vgap="14.0">
+            <VBox styleClass="metric-card" GridPane.columnIndex="0" GridPane.hgrow="ALWAYS">
+                <Label styleClass="metric-card-title" text="TOTAL IN QUEUE" />
+                <Label fx:id="lblTotalInQueue" styleClass="metric-card-value" text="0" />
+                <Label style="-fx-font-size: 11px; -fx-text-fill: #64748B;" text="Waiting &amp; Called" />
+            </VBox>
+
+            <VBox styleClass="metric-card, card-critical" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS">
+                <Label styleClass="metric-card-title" text="CRITICAL (P1)" />
+                <Label fx:id="lblCriticalCount" styleClass="metric-card-value" text="0" />
+                <Label style="-fx-font-size: 11px; -fx-text-fill: #DC2626;" text="Immediate care" />
+            </VBox>
+
+            <VBox styleClass="metric-card, card-high" GridPane.columnIndex="2" GridPane.hgrow="ALWAYS">
+                <Label styleClass="metric-card-title" text="HIGH (P2)" />
+                <Label fx:id="lblHighCount" styleClass="metric-card-value" text="0" />
+                <Label style="-fx-font-size: 11px; -fx-text-fill: #EA580C;" text="Urgent care" />
+            </VBox>
+
+            <VBox styleClass="metric-card" GridPane.columnIndex="3" GridPane.hgrow="ALWAYS">
+                <Label styleClass="metric-card-title" text="AVG WAITING TIME" />
+                <Label fx:id="lblAvgWait" styleClass="metric-card-value" text="0 min" />
+                <Label style="-fx-font-size: 11px; -fx-text-fill: #64748B;" text="Across active cases" />
+            </VBox>
+
+            <VBox styleClass="metric-card" GridPane.columnIndex="4" GridPane.hgrow="ALWAYS">
+                <Label styleClass="metric-card-title" text="MAX WAITING TIME" />
+                <Label fx:id="lblMaxWait" styleClass="metric-card-value" text="0 min" />
+                <Label style="-fx-font-size: 11px; -fx-text-fill: #64748B;" text="Longest waiting case" />
+            </VBox>
+        </GridPane>
+
+        <!-- Search & Filter Controls Bar -->
+        <HBox alignment="CENTER_LEFT" spacing="12.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 8px; -fx-border-color: #E2E8F0; -fx-border-radius: 8px; -fx-padding: 12px 16px;">
+            <TextField fx:id="txtSearch" prefWidth="280.0" promptText="🔍  Search by Token, Code, Name, or Symptoms..." />
+
+            <ComboBox fx:id="cmbFilterLevel" prefWidth="180.0" promptText="Filter by Severity" />
+            <ComboBox fx:id="cmbFilterStatus" prefWidth="160.0" promptText="Filter by Status" />
+
+            <Button onAction="#handleResetFilters" styleClass="btn-secondary" text="Reset Filters" />
+
+            <Region HBox.hgrow="ALWAYS" />
+
+            <Label fx:id="lblAutoRefreshStatus" style="-fx-font-size: 11px; -fx-text-fill: #64748B;" text="⏱️ Auto-refresh: 10s" />
+        </HBox>
+
+        <!-- MAIN LIVE QUEUE TABLE -->
+        <TableView fx:id="tblLiveQueue" minHeight="420.0" prefHeight="480.0">
+            <columns>
+                <TableColumn fx:id="colPos" prefWidth="60.0" text="Pos" />
+                <TableColumn fx:id="colToken" prefWidth="90.0" text="Token" />
+                <TableColumn fx:id="colCode" prefWidth="80.0" text="Code" />
+                <TableColumn fx:id="colName" prefWidth="170.0" text="Patient Name" />
+                <TableColumn fx:id="colAgeGender" prefWidth="90.0" text="Age/Sex" />
+                <TableColumn fx:id="colSymptoms" prefWidth="220.0" text="Reported Symptoms" />
+                <TableColumn fx:id="colEmergency" prefWidth="130.0" text="Emergency Level" />
+                <TableColumn fx:id="colArrival" prefWidth="85.0" text="Arrival" />
+                <TableColumn fx:id="colWaitTime" prefWidth="140.0" text="Waiting Time" />
+                <TableColumn fx:id="colDoctor" prefWidth="140.0" text="Assigned Doctor" />
+                <TableColumn fx:id="colStatus" prefWidth="100.0" text="Status" />
+                <TableColumn fx:id="colActions" prefWidth="170.0" text="Actions" />
+            </columns>
+            <placeholder>
+                <VBox alignment="CENTER" spacing="8.0">
+                    <Label style="-fx-font-size: 24px;" text="✅" />
+                    <Label style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #0F172A;" text="Emergency queue is currently empty." />
+                    <Label style="-fx-font-size: 12px; -fx-text-fill: #64748B;" text="No active patients are awaiting triage call." />
+                </VBox>
+            </placeholder>
+        </TableView>
+    </VBox>
+</ScrollPane>
