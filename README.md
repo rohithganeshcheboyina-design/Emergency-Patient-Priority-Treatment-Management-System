@@ -23,7 +23,9 @@ An enterprise-grade, academic and real-world inspired desktop application design
 10. [Demo Credentials](#-demo-credentials)
 11. [Patient Status Workflow](#-patient-status-workflow)
 12. [Automated Testing Suite](#-automated-testing-suite)
-13. [Future Enhancements & Limitations](#-future-enhancements--limitations)
+13. [Continuous Integration (CI/CD)](#-continuous-integration-cicd)
+14. [Screenshots & Visual Tour](#-screenshots--visual-tour)
+15. [Future Enhancements & Limitations](#-future-enhancements--limitations)
 
 ---
 
@@ -303,6 +305,22 @@ Automated testing and compilation are configured via GitHub Actions in [`.github
 - Clean Maven compilation.
 - Execution of all 38 unit and integration tests.
 - Standalone shaded JAR packaging.
+
+---
+
+## 📸 Screenshots & Visual Tour
+
+| Screen / View | Description | Preview / Key Elements |
+| :--- | :--- | :--- |
+| **Staff Sign In** | Multi-role authentication with auto-role detection and 1-click demo logins. | `Login.fxml` • BCrypt salted validation • Role selector |
+| **Doctor Workstation** | Live clinical dashboard featuring the head-of-queue **NEXT PATIENT** priority card. | `DoctorDashboard.fxml` • Start Treatment • Next Patient Details • Active Treatments |
+| **Live Emergency Queue** | Real-time sorting with dynamic position numbers, wait-time alerts, and severity badges. | `LiveQueue.fxml` • `#1, #2, #3` ordering • `⚠️ Alert Badges` • Call/Treat actions |
+| **Triage Patient Intake** | Emergency registration with auto-token generation, vitals capture, and allergies. | `PatientRegistration.fxml` • Auto-code `P0001` • Token `ER-001` • Red/Orange/Yellow/Green cards |
+| **Patient Clinical Profile** | Multi-encounter timeline with continuous vital signs capture and re-triage dialog. | `PatientDetail.fxml` • BP, Pulse, SpO2, Temp, RR • Diagnosis • Treatment History |
+| **Bed Management** | Ward & ICU capacity tracker with real-time occupancy and bed allocation modals. | `BedManagement.fxml` • 12 Bed units • General Ward & ICU • Clean/Occupied states |
+| **Outpatient Appointments** | Consultation booking desk isolated from emergency priority queue. | `Appointments.fxml` • Doctor specialty selector • Date/Time picker • Cancel actions |
+| **Role Authorization Matrix** | Transparent view of all 26 permissions mapped across Admin, Doctor, Nurse, and Patient. | `RoleAuthorization.fxml` • `✔ ALLOWED` (Green) • `✖ RESTRICTED` (Red) |
+| **Admin Analytics** | Department oversight with JavaFX Pie & Bar charts and one-click CSV export. | `AdminDashboard.fxml` / `Reports.fxml` • Triage Breakdown • Wait-time trends |
 
 ---
 

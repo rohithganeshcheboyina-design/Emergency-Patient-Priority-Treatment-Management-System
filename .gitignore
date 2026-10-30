@@ -3,21 +3,46 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+### Compiled Class Files ###
+*.class
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+### Virtual Machine & Crash Logs ###
+hs_err_pid*
+replay_pid*
+
+### Maven Build Output ###
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+
 ### IntelliJ IDEA ###
-.idea
+.idea/
 *.iws
 *.iml
 *.ipr
 out/
+cmake-build-*/
 
 ### Eclipse ###
 .apt_generated
 .classpath
 .factorypath
 .project
-.settings
+.settings/
 .springBeans
-.sts4-cache
+.sts4-cache/
 
 ### NetBeans ###
 /nbproject/private/
@@ -32,7 +57,21 @@ out/
 ### Operating System Files ###
 Thumbs.db
 .DS_Store
+desktop.ini
+$RECYCLE.BIN/
 
 ### Environment / Sensitive configuration ###
+.env
+*.env
+*.local
 *.log
 *.tmp
+*.bak
+*.swp
+credentials.json
+secrets.properties
+
+### Database / Embedded Cache ###
+*.h2.db
+*.trace.db
+hospital_emergency_system.mv.db
