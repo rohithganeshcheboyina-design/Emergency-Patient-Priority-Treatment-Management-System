@@ -6,7 +6,7 @@
 
 In accordance with strict preservation rules, the existing **Hospital Emergency Patient Priority Treatment Management System** has been audited, completed, hardened, and verified. No existing working features were removed or broken; all existing architecture and design conventions were preserved.
 
-The system is a high-performance **Java 17 enterprise application** utilizing **JavaFX 21** with a clean healthcare design system (`main.css`), layered architecture (**Controller → Service → DAO → Database**), dual-mode **MySQL / H2** fallback, granular **Role-Based Access Control (RBAC)** across 4 roles, and an automated **JUnit 5 test suite** with 26 passing test cases.
+The system is a high-performance **Java 17 enterprise application** utilizing **JavaFX 21** with a clean healthcare design system (`main.css`), layered architecture (**Controller → Service → DAO → Database**), dual-mode **MySQL / H2** fallback, granular **Role-Based Access Control (RBAC)** across 4 roles, and an automated **JUnit 5 test suite** with 38 passing test cases.
 
 ---
 
@@ -129,19 +129,25 @@ Running com.hospital.AuthenticationServiceTest
 Tests run: 3, Failures: 0, Errors: 0, Skipped: 0
 Running com.hospital.BedManagementTest
 Tests run: 2, Failures: 0, Errors: 0, Skipped: 0
+Running com.hospital.EndToEndHospitalWorkflowTest
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
 Running com.hospital.PatientValidationTest
 Tests run: 6, Failures: 0, Errors: 0, Skipped: 0
 Running com.hospital.PriorityQueueManagerTest
-Tests run: 5, Failures: 0, Errors: 0, Skipped: 0
+Tests run: 6, Failures: 0, Errors: 0, Skipped: 0
 Running com.hospital.RoleAuthorizationTest
 Tests run: 4, Failures: 0, Errors: 0, Skipped: 0
+Running com.hospital.SecurityAndInjectionTest
+Tests run: 7, Failures: 0, Errors: 0, Skipped: 0
 Running com.hospital.StatusWorkflowTest
 Tests run: 2, Failures: 0, Errors: 0, Skipped: 0
 Running com.hospital.TreatmentServiceTest
 Tests run: 2, Failures: 0, Errors: 0, Skipped: 0
+Running com.hospital.UserDAOTest
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0
 
 Results:
-Tests run: 26, Failures: 0, Errors: 0, Skipped: 0
+Tests run: 38, Failures: 0, Errors: 0, Skipped: 0
 [INFO] BUILD SUCCESS
 ```
 
