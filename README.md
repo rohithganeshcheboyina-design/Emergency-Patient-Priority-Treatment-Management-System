@@ -136,39 +136,73 @@ The system implements a layered architectural design:
 - **Security**: BCrypt salted hashing (`PasswordUtil`) and session handling (`SessionManager`).
 
 ```
-HospitalEmergencyPatientPriorityManagementSystem/
-├── pom.xml                               # Maven project descriptor
-├── README.md                             # Project documentation
-├── .gitignore                            # Git exclusions
-├── config.properties.example             # Configuration template
+Emergency-Patient-Priority-Treatment-Management-System/
+├── .github/
+│   └── workflows/
+│       └── ci.yml                            # Automated GitHub Actions CI test pipeline
+├── config/
+│   ├── config.properties.example             # Desktop application configuration template
+│   ├── application.properties.example        # Enterprise properties template
+│   └── README.md                             # Configuration & environment variables guide
 ├── database/
-│   ├── schema.sql                        # Full MySQL DDL
-│   ├── sample_data.sql                   # Realistic demo dataset
-│   └── README.md                         # Database setup guide
+│   ├── schema/
+│   │   └── schema.sql                        # Full MySQL 8 DDL with tables, indexes, constraints
+│   ├── migrations/
+│   │   └── V1__initial_schema.sql            # Versioned database migration baseline
+│   ├── sample-data/
+│   │   └── sample_data.sql                   # Seed dataset (demo users, beds, triage patients)
+│   └── README.md                             # Database setup & schema dictionary
+├── deployment/
+│   ├── docker/
+│   │   ├── Dockerfile                        # Multi-stage JDK 21 / OpenJFX build Dockerfile
+│   │   └── docker-compose.yml                # MySQL 8 + phpMyAdmin orchestrated services
+│   └── deployment-guide.md                   # Complete local, container, & production runbook
 ├── docs/
-│   ├── architecture.md                   # System architecture deep-dive
-│   ├── database.md                       # ERD and schema specification
-│   └── user-guide.md                     # Operational workflow manuals
+│   ├── architecture/
+│   │   ├── architecture.md                   # Class diagram, design patterns, & layer interaction
+│   │   └── system-design.md                  # ESI triage algorithms, queue heaps, & state machine
+│   ├── screenshots/
+│   │   └── README.md                         # UI dashboard previews & screenshot capture guide
+│   ├── testing/
+│   │   └── testing-guide.md                  # QA strategy, test matrices, & execution guide
+│   ├── project-documentation/
+│   │   ├── database.md                       # Comprehensive ERD & table specifications
+│   │   ├── user-guide.md                     # Operational workflow manuals for all roles
+│   │   └── walkthrough.md                    # Verification walkthrough & system inspection
+│   └── README.md                             # Documentation index hub
+├── tests/
+│   ├── unit/
+│   │   └── README.md                         # PriorityQueue, validation, & FSM test docs
+│   ├── integration/
+│   │   └── README.md                         # RBAC, bed allocation, & appointment test docs
+│   ├── e2e/
+│   │   └── README.md                         # End-to-end lifecycle & security injection test docs
+│   └── README.md                             # Quality assurance overview & test suite catalog
+├── .env.example                              # Environment variable template
+├── .gitignore                                # Comprehensive exclusion list (target, IDE, secrets)
+├── mvnw.cmd                                  # Windows Maven wrapper
+├── pom.xml                                   # Root Maven project descriptor
+├── README.md                                 # Main project documentation & quickstart
 └── src/
     ├── main/
-    │   ├── java/com/hospital/
-    │   │   ├── Main.java                 # JavaFX Application entry
-    │   │   ├── MainLauncher.java         # Shaded JAR wrapper
-    │   │   ├── model/                    # OOP Entities: User, Patient, Treatment, etc.
-    │   │   ├── dao/                      # JDBC Data Access Objects & DatabaseConnection
-    │   │   ├── service/                  # Business Logic & PriorityQueueManager
-    │   │   ├── controller/               # JavaFX UI Controllers
-    │   │   ├── security/                 # BCrypt & SessionManager
-    │   │   ├── exception/                # Domain-specific Custom Exceptions
-    │   │   └── util/                     # ConfigReader, AlertHelper, NotificationManager
+    │   ├── java/com/hospital/                # Core application source code
+    │   │   ├── Main.java                     # JavaFX application entrypoint
+    │   │   ├── MainLauncher.java             # Standalone shaded launcher wrapper
+    │   │   ├── controller/                   # 18 JavaFX UI view controllers
+    │   │   ├── dao/                          # JDBC Data Access Objects & resilient fallback
+    │   │   ├── exception/                    # Domain-specific custom exceptions
+    │   │   ├── model/                        # Domain models (Patient, Bed, Appointment, User)
+    │   │   ├── security/                     # BCrypt password hashing & SessionManager
+    │   │   ├── service/                      # Business services & PriorityQueueManager
+    │   │   └── util/                         # ConfigReader, AlertHelper, NotificationManager
     │   └── resources/
-    │       ├── config.properties         # Runtime configuration
-    │       ├── schema.sql                # Embedded schema copy
-    │       ├── sample_data.sql           # Embedded sample data copy
-    │       ├── css/main.css              # Hospital design stylesheet
-    │       └── fxml/                     # Modular FXML view definitions
+    │       ├── config.properties             # Default runtime configuration
+    │       ├── css/main.css                  # Modern hospital design stylesheet
+    │       ├── fxml/                         # 18 FXML view declarations
+    │       ├── sample_data.sql               # Embedded fallback seed data
+    │       └── schema.sql                    # Embedded fallback schema
     └── test/
-        └── java/com/hospital/            # JUnit 5 Automated Test Suite
+        └── java/com/hospital/                # 11 Test Suites (38 Unit, Integration, E2E tests)
 ```
 
 ---
@@ -195,8 +229,8 @@ The relational database `hospital_emergency_system` consists of 6 tables in 3NF:
 ### Step 1: Database Setup (MySQL)
 If running a local MySQL server (e.g. MySQL 8.0, XAMPP, or MySQL Workbench):
 ```powershell
-mysql -u root -p < database/schema.sql
-mysql -u root -p < database/sample_data.sql
+mysql -u root -p < database/schema/schema.sql
+mysql -u root -p < database/sample-data/sample_data.sql
 ```
 
 ### Step 2: Database Configuration

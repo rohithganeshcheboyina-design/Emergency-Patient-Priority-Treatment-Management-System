@@ -178,6 +178,12 @@ public class DatabaseConnection {
         static void loadFromFileSystem(Connection conn, String resourcePath, boolean ignoreErrors) {
             java.io.File file = new java.io.File("database" + resourcePath);
             if (!file.exists()) {
+                file = new java.io.File("database/schema" + resourcePath);
+            }
+            if (!file.exists()) {
+                file = new java.io.File("database/sample-data" + resourcePath);
+            }
+            if (!file.exists()) {
                 file = new java.io.File("." + resourcePath);
             }
             if (file.exists()) {

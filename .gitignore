@@ -70,6 +70,12 @@ $RECYCLE.BIN/
 *.swp
 credentials.json
 secrets.properties
+config.properties
+config/config.properties
+config/application.properties
+!config/config.properties.example
+!config/application.properties.example
+!src/main/resources/config.properties
 
 ### Database / Embedded Cache ###
 *.h2.db

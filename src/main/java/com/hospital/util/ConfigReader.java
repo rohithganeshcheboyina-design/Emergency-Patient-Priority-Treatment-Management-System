@@ -19,14 +19,19 @@ public class ConfigReader {
     private static synchronized void loadProperties() {
         if (loaded) return;
 
-        // Try external config.properties first (in execution directory)
-        File externalFile = new File("config.properties");
-        if (externalFile.exists()) {
-            try (InputStream in = new FileInputStream(externalFile)) {
-                properties.load(in);
-                loaded = true;
-                return;
-            } catch (Exception ignored) {}
+        // Try external config.properties (in config/ or current working directory)
+        File[] candidateFiles = new File[] {
+            new File("config/config.properties"),
+            new File("config.properties")
+        };
+        for (File externalFile : candidateFiles) {
+            if (externalFile.exists()) {
+                try (InputStream in = new FileInputStream(externalFile)) {
+                    properties.load(in);
+                    loaded = true;
+                    return;
+                } catch (Exception ignored) {}
+            }
         }
 
         // Fallback to classpath resource

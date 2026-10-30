@@ -1,0 +1,48 @@
+# ===================================================================
+# Emergency Patient Priority Treatment Management System
+# Standard Application Properties Example
+# ===================================================================
+
+# -------------------------------------------------------------------
+# Database Configuration (MySQL 8+)
+# -------------------------------------------------------------------
+db.type=mysql
+db.host=localhost
+db.port=3306
+db.name=hospital_emergency_system
+db.username=root
+db.password=your_secure_password_here
+db.url=jdbc:mysql://localhost:3306/hospital_emergency_system?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+
+# Connection Pool / Driver Parameters
+db.driver=com.mysql.cj.jdbc.Driver
+db.pool.minIdle=5
+db.pool.maxTotal=20
+db.pool.maxWaitMillis=10000
+
+# -------------------------------------------------------------------
+# Application Metadata & Runtime Settings
+# -------------------------------------------------------------------
+app.name=Hospital Emergency Patient Priority Management System
+app.version=1.0.0
+app.env=production
+
+# -------------------------------------------------------------------
+# Emergency Triage Wait-Time Escalation Thresholds (Minutes)
+# -------------------------------------------------------------------
+# Priority 1 (RED): Resuscitation / Immediate Life Threat
+app.emergency.critical.wait_threshold_min=15
+
+# Priority 2 (ORANGE): Emergent / High Clinical Risk
+app.emergency.high.wait_threshold_min=30
+
+# Priority 3 (YELLOW): Urgent / Moderate Risk
+app.emergency.medium.wait_threshold_min=60
+
+# Priority 4 (GREEN): Standard / Non-Urgent Care
+app.emergency.low.wait_threshold_min=120
+
+# -------------------------------------------------------------------
+# Real-Time UI Polling & Refresh Interval (Seconds)
+# -------------------------------------------------------------------
+app.queue.auto_refresh_seconds=10
