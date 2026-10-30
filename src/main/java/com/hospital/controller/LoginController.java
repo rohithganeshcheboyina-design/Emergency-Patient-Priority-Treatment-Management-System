@@ -37,6 +37,10 @@ public class LoginController {
                 Role.PATIENT.getDisplayName()
         ));
         cmbRole.getSelectionModel().selectFirst();
+
+        // Enable pressing Enter on username or password to sign in
+        txtUsername.setOnAction(e -> handleLogin());
+        txtPassword.setOnAction(e -> handleLogin());
     }
 
     @FXML
