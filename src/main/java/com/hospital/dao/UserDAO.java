@@ -187,6 +187,8 @@ public class UserDAO {
             user = new Doctor(id, username, passwordHash, fullName, phone, email, active, createdAt, "Emergency Physician", "Emergency Medicine");
         } else if (role == Role.NURSE) {
             user = new Nurse(id, username, passwordHash, fullName, phone, email, active, createdAt, "General Shift", "Triage Station 1");
+        } else if (role == Role.PATIENT) {
+            user = new PatientUser(id, username, passwordHash, fullName, phone, email, active, createdAt, "P0001");
         } else {
             user = new Admin(id, username, passwordHash, fullName, phone, email, active, createdAt);
         }

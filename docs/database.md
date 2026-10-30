@@ -4,6 +4,7 @@
 
 ### 1. Database Specifications
 - **Database Engine**: MySQL 8.0+ (InnoDB Storage Engine)
+- **Embedded Fallback Engine**: H2 In-Memory Database (`MODE=MySQL`)
 - **Character Set**: `utf8mb4`
 - **Collation**: `utf8mb4_unicode_ci`
 - **Default Database Name**: `hospital_emergency_system`
@@ -20,10 +21,13 @@ erDiagram
     users ||--o{ treatments : "conducted by doctor"
     users ||--o{ patient_status_history : "changed by"
     users ||--o{ activity_logs : "performed by"
+    users ||--o{ appointments : "consulting doctor"
 
     patients ||--o{ emergency_assessments : "has triage evaluations"
     patients ||--o{ treatments : "receives treatments"
     patients ||--o{ patient_status_history : "has status audit trail"
+    patients ||--o{ appointments : "books consultations"
+    patients ||--o{ beds : "assigned bed"
 
     users {
         int user_id PK
@@ -47,6 +51,13 @@ erDiagram
         string phone
         string address
         string blood_group
+        string allergies
+        string emergency_contact
+        string vital_bp
+        int vital_heart_rate
+        double vital_temp
+        int vital_spo2
+        int vital_respiratory_rate
         string symptoms
         string emergency_level
         int priority
@@ -55,6 +66,28 @@ erDiagram
         string current_status
         datetime created_at
         datetime updated_at
+    }
+
+    beds {
+        int bed_id PK
+        string bed_number UK
+        string bed_type
+        string status
+        int assigned_patient_id FK
+        datetime assigned_at
+        string notes
+    }
+
+    appointments {
+        int appointment_id PK
+        int patient_id FK
+        int doctor_id FK
+        datetime appointment_time
+        string specialty
+        string status
+        string reason
+        string notes
+        datetime created_at
     }
 
     emergency_assessments {
@@ -75,6 +108,8 @@ erDiagram
         datetime start_time
         datetime end_time
         string treatment_status
+        string diagnosis
+        string medications
         string notes
     }
 
@@ -103,98 +138,106 @@ erDiagram
 
 ### 3. Detailed Table Schema Definitions
 
-#### 3.1. Table: `users`
-Stores authorized healthcare personnel accounts with role permissions and BCrypt credential hashes.
+#### 3.1 `users`
+Stores authenticated user accounts for staff and patients with BCrypt-hashed passwords.
+- `user_id` (INT, PK, AUTO_INCREMENT)
+- `username` (VARCHAR(50), UNIQUE, NOT NULL)
+- `password_hash` (VARCHAR(255), NOT NULL)
+- `full_name` (VARCHAR(100), NOT NULL)
+- `role` (VARCHAR(20), NOT NULL) - Enum: `ADMIN`, `DOCTOR`, `NURSE`, `PATIENT`
+- `phone` (VARCHAR(20))
+- `email` (VARCHAR(100))
+- `active` (BOOLEAN, DEFAULT TRUE)
+- `created_at` (DATETIME, DEFAULT CURRENT_TIMESTAMP)
 
-| Column | Type | Constraints | Description |
-| :--- | :--- | :--- | :--- |
-| `user_id` | `INT` | `AUTO_INCREMENT, PRIMARY KEY` | Unique surrogate key |
-| `username` | `VARCHAR(50)` | `NOT NULL, UNIQUE` | Unique login handle |
-| `password_hash` | `VARCHAR(255)` | `NOT NULL` | BCrypt salted hash |
-| `full_name` | `VARCHAR(100)` | `NOT NULL` | Full professional title & name |
-| `role` | `ENUM` | `NOT NULL` | `'ADMIN'`, `'DOCTOR'`, `'NURSE'` |
-| `phone` | `VARCHAR(20)` | `NULL` | Contact phone number |
-| `email` | `VARCHAR(100)` | `NULL` | Hospital email address |
-| `active` | `BOOLEAN` | `DEFAULT TRUE` | Soft deletion / activation flag |
-| `created_at` | `DATETIME` | `DEFAULT CURRENT_TIMESTAMP` | Account provisioning timestamp |
+#### 3.2 `patients`
+Emergency patients intake records, clinical vitals, triage classification, and current status.
+- `patient_id` (INT, PK, AUTO_INCREMENT)
+- `patient_code` (VARCHAR(20), UNIQUE, NOT NULL)
+- `token_number` (VARCHAR(20), UNIQUE, NOT NULL)
+- `full_name` (VARCHAR(100), NOT NULL)
+- `age` (INT, NOT NULL)
+- `gender` (VARCHAR(10), NOT NULL)
+- `phone` (VARCHAR(20), NOT NULL)
+- `address` (TEXT)
+- `blood_group` (VARCHAR(10))
+- `allergies` (VARCHAR(255))
+- `emergency_contact` (VARCHAR(255))
+- `vital_bp` (VARCHAR(20))
+- `vital_heart_rate` (INT)
+- `vital_temp` (DECIMAL(4,1))
+- `vital_spo2` (INT)
+- `vital_respiratory_rate` (INT)
+- `symptoms` (TEXT, NOT NULL)
+- `emergency_level` (VARCHAR(20), NOT NULL) - Enum: `CRITICAL`, `HIGH`, `MEDIUM`, `LOW`
+- `priority` (INT, NOT NULL) - 1 (Critical), 2 (High), 3 (Medium), 4 (Low)
+- `arrival_time` (DATETIME, NOT NULL)
+- `assigned_doctor_id` (INT, FK -> `users.user_id`)
+- `current_status` (VARCHAR(20), NOT NULL, DEFAULT 'WAITING')
+- `created_at` (DATETIME, DEFAULT CURRENT_TIMESTAMP)
+- `updated_at` (DATETIME, DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP)
 
-#### 3.2. Table: `patients`
-Central emergency intake registry capturing demographic details, emergency triage level, priority, arrival time, and current workflow status.
+#### 3.3 `beds`
+Hospital bed and ward occupancy tracking.
+- `bed_id` (INT, PK, AUTO_INCREMENT)
+- `bed_number` (VARCHAR(20), UNIQUE, NOT NULL)
+- `bed_type` (VARCHAR(30), NOT NULL, DEFAULT 'EMERGENCY') - Enum: `EMERGENCY`, `ICU`, `TRAUMA_BAY`, `OBSERVATION`, `GENERAL_WARD`
+- `status` (VARCHAR(20), NOT NULL, DEFAULT 'AVAILABLE') - Enum: `AVAILABLE`, `OCCUPIED`, `RESERVED`, `MAINTENANCE`
+- `assigned_patient_id` (INT, FK -> `patients.patient_id`, ON DELETE SET NULL)
+- `assigned_at` (DATETIME)
+- `notes` (TEXT)
 
-| Column | Type | Constraints | Description |
-| :--- | :--- | :--- | :--- |
-| `patient_id` | `INT` | `AUTO_INCREMENT, PRIMARY KEY` | Internal surrogate key |
-| `patient_code` | `VARCHAR(20)` | `NOT NULL, UNIQUE` | Hospital patient code (e.g. `P0001`) |
-| `token_number` | `VARCHAR(20)` | `NOT NULL, UNIQUE` | Emergency ticket token (e.g. `ER-001`) |
-| `full_name` | `VARCHAR(100)` | `NOT NULL` | Patient full legal name |
-| `age` | `INT` | `NOT NULL` | Patient age (0–130) |
-| `gender` | `VARCHAR(10)` | `NOT NULL` | `'Male'`, `'Female'`, `'Other'` |
-| `phone` | `VARCHAR(20)` | `NOT NULL` | Contact phone number |
-| `address` | `TEXT` | `NULL` | Residential address |
-| `blood_group` | `VARCHAR(10)` | `NULL` | Blood type (e.g. `O+`, `A-`) |
-| `symptoms` | `TEXT` | `NOT NULL` | Chief clinical complaint |
-| `emergency_level` | `VARCHAR(20)` | `NOT NULL` | `'CRITICAL'`, `'HIGH'`, `'MEDIUM'`, `'LOW'` |
-| `priority` | `INT` | `NOT NULL` | Priority number: 1, 2, 3, or 4 |
-| `arrival_time` | `DATETIME` | `NOT NULL` | Triage arrival timestamp |
-| `assigned_doctor_id` | `INT` | `NULL, FK -> users(user_id)` | Primary attending physician |
-| `current_status` | `VARCHAR(20)` | `DEFAULT 'WAITING'` | Workflow state |
-| `created_at` | `DATETIME` | `DEFAULT CURRENT_TIMESTAMP` | Record creation time |
-| `updated_at` | `DATETIME` | `ON UPDATE CURRENT_TIMESTAMP` | Last modification time |
+#### 3.4 `appointments`
+Outpatient scheduled consultations separated safely from emergency queue workflows.
+- `appointment_id` (INT, PK, AUTO_INCREMENT)
+- `patient_id` (INT, NOT NULL, FK -> `patients.patient_id`, ON DELETE CASCADE)
+- `doctor_id` (INT, NOT NULL, FK -> `users.user_id`, ON DELETE CASCADE)
+- `appointment_time` (DATETIME, NOT NULL)
+- `specialty` (VARCHAR(100))
+- `status` (VARCHAR(20), NOT NULL, DEFAULT 'SCHEDULED') - Enum: `SCHEDULED`, `CONFIRMED`, `COMPLETED`, `CANCELLED`
+- `reason` (VARCHAR(255))
+- `notes` (TEXT)
+- `created_at` (DATETIME, DEFAULT CURRENT_TIMESTAMP)
 
-**Indexes**:
-- `idx_priority_arrival (priority, arrival_time)`: High-performance composite index powering the Priority Queue query.
-- `idx_current_status (current_status)`: Filters waiting vs. discharged cases.
-- `idx_patient_code (patient_code)` & `idx_token_number (token_number)`: Instant lookups.
+#### 3.5 `emergency_assessments`
+Clinical severity evaluations and audit records.
+- `assessment_id` (INT, PK, AUTO_INCREMENT)
+- `patient_id` (INT, NOT NULL, FK -> `patients.patient_id`, ON DELETE CASCADE)
+- `emergency_level` (VARCHAR(20), NOT NULL)
+- `priority` (INT, NOT NULL)
+- `symptoms` (TEXT, NOT NULL)
+- `assessed_by` (INT, NOT NULL, FK -> `users.user_id`)
+- `assessed_at` (DATETIME, DEFAULT CURRENT_TIMESTAMP)
+- `notes` (TEXT)
 
-#### 3.3. Table: `emergency_assessments`
-Clinical audit logs of triage evaluations conducted by medical staff.
+#### 3.6 `treatments`
+Clinical procedures, attending physician, diagnosis, and medication orders.
+- `treatment_id` (INT, PK, AUTO_INCREMENT)
+- `patient_id` (INT, NOT NULL, FK -> `patients.patient_id`, ON DELETE CASCADE)
+- `doctor_id` (INT, NOT NULL, FK -> `users.user_id`)
+- `start_time` (DATETIME, NOT NULL)
+- `end_time` (DATETIME)
+- `treatment_status` (VARCHAR(50), NOT NULL, DEFAULT 'IN_PROGRESS') - Enum: `IN_PROGRESS`, `COMPLETED`
+- `diagnosis` (VARCHAR(255))
+- `medications` (TEXT)
+- `notes` (TEXT)
 
-| Column | Type | Constraints | Description |
-| :--- | :--- | :--- | :--- |
-| `assessment_id` | `INT` | `AUTO_INCREMENT, PRIMARY KEY` | Evaluation ID |
-| `patient_id` | `INT` | `NOT NULL, FK -> patients` | Referenced patient |
-| `emergency_level` | `VARCHAR(20)` | `NOT NULL` | Assigned severity level |
-| `priority` | `INT` | `NOT NULL` | Priority score (1-4) |
-| `symptoms` | `TEXT` | `NOT NULL` | Evaluation symptoms |
-| `assessed_by` | `INT` | `NOT NULL, FK -> users` | Staff user who triaged |
-| `assessed_at` | `DATETIME` | `DEFAULT CURRENT_TIMESTAMP` | Evaluation timestamp |
-| `notes` | `TEXT` | `NULL` | Triage notes & findings |
+#### 3.7 `patient_status_history`
+Full audit trail of status workflow transitions.
+- `history_id` (INT, PK, AUTO_INCREMENT)
+- `patient_id` (INT, NOT NULL, FK -> `patients.patient_id`, ON DELETE CASCADE)
+- `old_status` (VARCHAR(20))
+- `new_status` (VARCHAR(20), NOT NULL)
+- `changed_by` (INT, NOT NULL, FK -> `users.user_id`)
+- `changed_at` (DATETIME, DEFAULT CURRENT_TIMESTAMP)
+- `remarks` (TEXT)
 
-#### 3.4. Table: `treatments`
-Tracks interventions, procedures, observations, and care completion.
-
-| Column | Type | Constraints | Description |
-| :--- | :--- | :--- | :--- |
-| `treatment_id` | `INT` | `AUTO_INCREMENT, PRIMARY KEY` | Treatment ID |
-| `patient_id` | `INT` | `NOT NULL, FK -> patients` | Patient receiving care |
-| `doctor_id` | `INT` | `NOT NULL, FK -> users` | Attending physician |
-| `start_time` | `DATETIME` | `NOT NULL` | Commencement time |
-| `end_time` | `DATETIME` | `NULL` | Completion / discharge time |
-| `treatment_status` | `VARCHAR(50)` | `DEFAULT 'IN_PROGRESS'` | `'IN_PROGRESS'`, `'COMPLETED'` |
-| `notes` | `TEXT` | `NULL` | Clinical care & medication notes |
-
-#### 3.5. Table: `patient_status_history`
-Immutable audit trail recording every workflow status transition.
-
-| Column | Type | Constraints | Description |
-| :--- | :--- | :--- | :--- |
-| `history_id` | `INT` | `AUTO_INCREMENT, PRIMARY KEY` | History ID |
-| `patient_id` | `INT` | `NOT NULL, FK -> patients` | Target patient |
-| `old_status` | `VARCHAR(20)` | `NULL` | Status prior to change |
-| `new_status` | `VARCHAR(20)` | `NOT NULL` | Updated status |
-| `changed_by` | `INT` | `NOT NULL, FK -> users` | Healthcare worker responsible |
-| `changed_at` | `DATETIME` | `DEFAULT CURRENT_TIMESTAMP` | Transition timestamp |
-| `remarks` | `TEXT` | `NULL` | Justification or transfer notes |
-
-#### 3.6. Table: `activity_logs`
-System-wide activity logger for operational auditing.
-
-| Column | Type | Constraints | Description |
-| :--- | :--- | :--- | :--- |
-| `log_id` | `INT` | `AUTO_INCREMENT, PRIMARY KEY` | Log ID |
-| `user_id` | `INT` | `NULL, FK -> users` | Operating user |
-| `action` | `VARCHAR(50)` | `NOT NULL` | Action code (e.g. `LOGIN`, `PATIENT_REGISTERED`) |
-| `entity_type` | `VARCHAR(50)` | `NULL` | Target domain entity |
-| `entity_id` | `INT` | `NULL` | Target entity identifier |
-| `timestamp` | `DATETIME` | `DEFAULT CURRENT_TIMESTAMP` | Occurrence timestamp |
-| `description` | `TEXT` | `NULL` | Human-readable log narrative |
+#### 3.8 `activity_logs`
+System operational audit events.
+- `log_id` (INT, PK, AUTO_INCREMENT)
+- `user_id` (INT, FK -> `users.user_id`, ON DELETE SET NULL)
+- `action` (VARCHAR(50), NOT NULL)
+- `entity_type` (VARCHAR(50))
+- `entity_id` (INT)
+- `timestamp` (DATETIME, DEFAULT CURRENT_TIMESTAMP)
+- `description` (TEXT)

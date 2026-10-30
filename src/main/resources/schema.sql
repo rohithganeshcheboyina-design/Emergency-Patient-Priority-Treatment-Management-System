@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS users (
     username VARCHAR(50) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
     full_name VARCHAR(100) NOT NULL,
-    role ENUM('ADMIN', 'DOCTOR', 'NURSE') NOT NULL,
+    role ENUM('ADMIN', 'DOCTOR', 'NURSE', 'PATIENT') NOT NULL,
     phone VARCHAR(20),
     email VARCHAR(100),
     active BOOLEAN NOT NULL DEFAULT TRUE,
@@ -39,6 +39,13 @@ CREATE TABLE IF NOT EXISTS patients (
     phone VARCHAR(20) NOT NULL,
     address TEXT,
     blood_group VARCHAR(10),
+    allergies TEXT,
+    emergency_contact VARCHAR(100),
+    vital_bp VARCHAR(20),
+    vital_heart_rate INT,
+    vital_temp DOUBLE,
+    vital_spo2 INT,
+    vital_respiratory_rate INT,
     symptoms TEXT NOT NULL,
     emergency_level VARCHAR(20) NOT NULL,
     priority INT NOT NULL,
@@ -84,6 +91,8 @@ CREATE TABLE IF NOT EXISTS treatments (
     start_time DATETIME NOT NULL,
     end_time DATETIME NULL,
     treatment_status VARCHAR(50) NOT NULL DEFAULT 'IN_PROGRESS',
+    diagnosis VARCHAR(255) NULL,
+    medications TEXT NULL,
     notes TEXT,
     CONSTRAINT fk_treatments_patient FOREIGN KEY (patient_id) 
         REFERENCES patients(patient_id) ON DELETE CASCADE,
@@ -112,7 +121,45 @@ CREATE TABLE IF NOT EXISTS patient_status_history (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
--- 6. Table: activity_logs
+-- 6. Table: beds (Bed Management)
+-- --------------------------------------------------------
+CREATE TABLE IF NOT EXISTS beds (
+    bed_id INT AUTO_INCREMENT PRIMARY KEY,
+    bed_number VARCHAR(20) NOT NULL UNIQUE,
+    bed_type VARCHAR(30) NOT NULL DEFAULT 'EMERGENCY',
+    status VARCHAR(20) NOT NULL DEFAULT 'AVAILABLE',
+    assigned_patient_id INT NULL,
+    assigned_at DATETIME NULL,
+    notes TEXT,
+    CONSTRAINT fk_beds_patient FOREIGN KEY (assigned_patient_id) 
+        REFERENCES patients(patient_id) ON DELETE SET NULL,
+    INDEX idx_bed_status (status),
+    INDEX idx_bed_type (bed_type)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+-- 7. Table: appointments (Consultation Management)
+-- --------------------------------------------------------
+CREATE TABLE IF NOT EXISTS appointments (
+    appointment_id INT AUTO_INCREMENT PRIMARY KEY,
+    patient_id INT NOT NULL,
+    doctor_id INT NOT NULL,
+    appointment_time DATETIME NOT NULL,
+    specialty VARCHAR(100),
+    status VARCHAR(20) NOT NULL DEFAULT 'SCHEDULED',
+    reason VARCHAR(255),
+    notes TEXT,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_appointments_patient FOREIGN KEY (patient_id) 
+        REFERENCES patients(patient_id) ON DELETE CASCADE,
+    CONSTRAINT fk_appointments_doctor FOREIGN KEY (doctor_id) 
+        REFERENCES users(user_id) ON DELETE CASCADE,
+    INDEX idx_appointment_time (appointment_time),
+    INDEX idx_appointment_status (status)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+-- 8. Table: activity_logs
 -- --------------------------------------------------------
 CREATE TABLE IF NOT EXISTS activity_logs (
     log_id INT AUTO_INCREMENT PRIMARY KEY,

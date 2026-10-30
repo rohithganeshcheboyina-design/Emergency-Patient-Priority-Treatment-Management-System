@@ -33,7 +33,8 @@ public class LoginController {
                 "Any / Auto-Detect",
                 Role.ADMIN.getDisplayName(),
                 Role.DOCTOR.getDisplayName(),
-                Role.NURSE.getDisplayName()
+                Role.NURSE.getDisplayName(),
+                Role.PATIENT.getDisplayName()
         ));
         cmbRole.getSelectionModel().selectFirst();
     }
@@ -93,6 +94,14 @@ public class LoginController {
         txtUsername.setText("nurse");
         txtPassword.setText("nurse123");
         cmbRole.getSelectionModel().select(Role.NURSE.getDisplayName());
+        lblError.setVisible(false);
+    }
+
+    @FXML
+    public void fillPatientDemo() {
+        txtUsername.setText("patient");
+        txtPassword.setText("doctor123");
+        cmbRole.getSelectionModel().select(Role.PATIENT.getDisplayName());
         lblError.setVisible(false);
     }
 }

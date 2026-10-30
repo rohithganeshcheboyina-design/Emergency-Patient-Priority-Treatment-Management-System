@@ -92,9 +92,19 @@
                         <ComboBox fx:id="cmbDoctor" maxWidth="Infinity" promptText="Choose attending physician" />
                     </VBox>
 
-                    <VBox spacing="4.0" GridPane.columnIndex="0" GridPane.columnSpan="4" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2">
+                    <VBox spacing="4.0" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2">
                         <Label styleClass="form-label" text="Residential Address" />
                         <TextField fx:id="txtAddress" promptText="Street address, apartment, city" />
+                    </VBox>
+
+                    <VBox spacing="4.0" GridPane.columnIndex="2" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2">
+                        <Label styleClass="form-label" text="Known Allergies (Optional)" />
+                        <TextField fx:id="txtAllergies" promptText="e.g. Penicillin, Sulfa, None" />
+                    </VBox>
+
+                    <VBox spacing="4.0" GridPane.columnIndex="3" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2">
+                        <Label styleClass="form-label" text="Emergency Contact &amp; Relation" />
+                        <TextField fx:id="txtEmergencyContact" promptText="e.g. Jane Doe (Wife) 555-0911" />
                     </VBox>
                 </GridPane>
             </VBox>

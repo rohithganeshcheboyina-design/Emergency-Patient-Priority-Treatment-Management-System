@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Priority?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<ScrollPane fitToWidth="true" stylesheets="@../css/main.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.hospital.controller.RoleAuthorizationController">
+    <VBox spacing="18.0" styleClass="content-area">
+        <!-- Title & Subtitle Header -->
+        <HBox alignment="CENTER_LEFT" spacing="12.0">
+            <VBox spacing="2.0">
+                <Label style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #0F172A;" text="Role-Based Access Control (RBAC) &amp; Authorization Matrix" />
+                <Label style="-fx-font-size: 12px; -fx-text-fill: #64748B;" text="Enforced permissions across presentation, service, and data layers for all hospital user roles" />
+            </VBox>
+        </HBox>
+
+        <!-- Role Summary Overview Cards -->
+        <GridPane hgap="12.0" vgap="12.0">
+            <!-- Admin Role Card -->
+            <VBox spacing="4.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 8px; -fx-border-color: #CBD5E1; -fx-border-radius: 8px; -fx-padding: 14px;" GridPane.columnIndex="0" GridPane.hgrow="ALWAYS">
+                <HBox alignment="CENTER_LEFT" spacing="6.0">
+                    <Label style="-fx-font-size: 16px;" text="👑" />
+                    <Label style="-fx-font-weight: bold; -fx-font-size: 14px; -fx-text-fill: #0F172A;" text="ADMIN ROLE" />
+                </HBox>
+                <Label style="-fx-font-size: 11px; -fx-text-fill: #64748B;" text="Supervises staff, views all reports, audits, activity logs, bed capacity, and system settings. Cannot register patients or perform clinical treatment." wrapText="true" />
+            </VBox>
+
+            <!-- Doctor Role Card -->
+            <VBox spacing="4.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 8px; -fx-border-color: #CBD5E1; -fx-border-radius: 8px; -fx-padding: 14px;" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS">
+                <HBox alignment="CENTER_LEFT" spacing="6.0">
+                    <Label style="-fx-font-size: 16px;" text="🩺" />
+                    <Label style="-fx-font-weight: bold; -fx-font-size: 14px; -fx-text-fill: #0F172A;" text="DOCTOR ROLE" />
+                </HBox>
+                <Label style="-fx-font-size: 11px; -fx-text-fill: #64748B;" text="Attends prioritized patients, NEXT PATIENT triage intake, initiates treatment, records diagnosis/medications, and authorizes discharges. No user or settings access." wrapText="true" />
+            </VBox>
+
+            <!-- Nurse Role Card -->
+            <VBox spacing="4.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 8px; -fx-border-color: #CBD5E1; -fx-border-radius: 8px; -fx-padding: 14px;" GridPane.columnIndex="2" GridPane.hgrow="ALWAYS">
+                <HBox alignment="CENTER_LEFT" spacing="6.0">
+                    <Label style="-fx-font-size: 16px;" text="💉" />
+                    <Label style="-fx-font-weight: bold; -fx-font-size: 14px; -fx-text-fill: #0F172A;" text="NURSE ROLE" />
+                </HBox>
+                <Label style="-fx-font-size: 11px; -fx-text-fill: #64748B;" text="Performs emergency patient intake &amp; triage registration, captures vitals, updates triage severity, calls patients to bays, and monitors live queue. No discharge rights." wrapText="true" />
+            </VBox>
+
+            <!-- Patient Role Card -->
+            <VBox spacing="4.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 8px; -fx-border-color: #CBD5E1; -fx-border-radius: 8px; -fx-padding: 14px;" GridPane.columnIndex="3" GridPane.hgrow="ALWAYS">
+                <HBox alignment="CENTER_LEFT" spacing="6.0">
+                    <Label style="-fx-font-size: 16px;" text="👤" />
+                    <Label style="-fx-font-weight: bold; -fx-font-size: 14px; -fx-text-fill: #0F172A;" text="PATIENT ROLE" />
+                </HBox>
+                <Label style="-fx-font-size: 11px; -fx-text-fill: #64748B;" text="Self-service portal for tracking personal emergency triage status, viewing upcoming outpatient appointments, and checking approved clinical summaries." wrapText="true" />
+            </VBox>
+        </GridPane>
+
+        <!-- Exhaustive Role Authorization Table -->
+        <VBox spacing="10.0">
+            <HBox alignment="CENTER_LEFT" spacing="8.0">
+                <Label style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #0F172A;" text="Exhaustive System Permissions &amp; Access Rights" />
+                <Region HBox.hgrow="ALWAYS" />
+                <Label style="-fx-font-size: 11px; -fx-text-fill: #15803D; -fx-font-weight: bold;" text="✔ Green = Allowed" />
+                <Label style="-fx-font-size: 11px; -fx-text-fill: #94A3B8;" text=" | " />
+                <Label style="-fx-font-size: 11px; -fx-text-fill: #B91C1C; -fx-font-weight: bold;" text="✖ Red = Restricted" />
+            </HBox>
+
+            <TableView fx:id="tblPermissions" minHeight="480.0" prefHeight="540.0">
+                <columns>
+                    <TableColumn fx:id="colCategory" prefWidth="130.0" text="Module Category" />
+                    <TableColumn fx:id="colPermission" prefWidth="200.0" text="Feature / Permission" />
+                    <TableColumn fx:id="colDescription" prefWidth="280.0" text="Functional Description" />
+                    <TableColumn fx:id="colAdmin" prefWidth="120.0" text="Admin 👑" />
+                    <TableColumn fx:id="colDoctor" prefWidth="120.0" text="Doctor 🩺" />
+                    <TableColumn fx:id="colNurse" prefWidth="120.0" text="Nurse 💉" />
+                    <TableColumn fx:id="colPatient" prefWidth="120.0" text="Patient 👤" />
+                </columns>
+                <placeholder>
+                    <Label style="-fx-text-fill: #94A3B8;" text="Loading authorization matrix..." />
+                </placeholder>
+            </TableView>
+        </VBox>
+    </VBox>
+</ScrollPane>

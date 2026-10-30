@@ -7,13 +7,15 @@ import com.hospital.dao.TreatmentDAO;
 import com.hospital.exception.InvalidPatientDataException;
 import com.hospital.model.Patient;
 import com.hospital.model.PatientStatus;
+import com.hospital.model.Permission;
 import com.hospital.model.Treatment;
+import com.hospital.security.SessionManager;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 /**
- * Service managing medical treatment workflows for doctors.
+ * Service managing medical treatment workflows for doctors with RBAC security validation.
  */
 public class TreatmentService {
 
@@ -31,14 +33,28 @@ public class TreatmentService {
         this.queueManager = queueManager;
     }
 
+    public TreatmentService(TreatmentDAO treatmentDAO, PatientDAO patientDAO,
+                            PatientStatusHistoryDAO historyDAO, ActivityLogDAO activityLogDAO,
+                            PriorityQueueManager queueManager) {
+        this.treatmentDAO = treatmentDAO;
+        this.patientDAO = patientDAO;
+        this.historyDAO = historyDAO;
+        this.activityLogDAO = activityLogDAO;
+        this.queueManager = queueManager;
+    }
+
     /**
-     * Starts treatment for a patient:
-     * - Creates a Treatment record with status IN_PROGRESS.
-     * - Updates patient status to IN_TREATMENT and assigns doctor.
-     * - Evicts patient from the waiting priority queue.
-     * - Records status history and audit log.
+     * Starts clinical treatment for a patient (Doctor only).
      */
     public Treatment startTreatment(int patientId, int doctorId, String notes) throws InvalidPatientDataException {
+        return startTreatment(patientId, doctorId, null, null, notes);
+    }
+
+    public Treatment startTreatment(int patientId, int doctorId, String diagnosis, String medications, String notes) throws InvalidPatientDataException {
+        if (SessionManager.getInstance().isLoggedIn()) {
+            SessionManager.getInstance().requirePermission(Permission.START_TREATMENT);
+        }
+
         Patient p = patientDAO.findById(patientId);
         if (p == null) {
             throw new InvalidPatientDataException("Patient with ID " + patientId + " not found.");
@@ -54,6 +70,8 @@ public class TreatmentService {
         treatment.setDoctorId(doctorId);
         treatment.setStartTime(LocalDateTime.now());
         treatment.setTreatmentStatus("IN_PROGRESS");
+        treatment.setDiagnosis(diagnosis);
+        treatment.setMedications(medications);
         treatment.setNotes(notes != null ? notes : "Emergency clinical treatment started.");
 
         treatmentDAO.createTreatment(treatment);
@@ -79,12 +97,17 @@ public class TreatmentService {
     }
 
     /**
-     * Completes an in-progress treatment:
-     * - Updates Treatment record with endTime and status COMPLETED.
-     * - Updates patient status to TREATED.
-     * - Records status history and audit log.
+     * Completes an in-progress treatment (Doctor only).
      */
     public boolean completeTreatment(int patientId, int doctorId, String completionNotes) throws InvalidPatientDataException {
+        return completeTreatment(patientId, doctorId, null, null, completionNotes);
+    }
+
+    public boolean completeTreatment(int patientId, int doctorId, String diagnosis, String medications, String completionNotes) throws InvalidPatientDataException {
+        if (SessionManager.getInstance().isLoggedIn()) {
+            SessionManager.getInstance().requirePermission(Permission.COMPLETE_TREATMENT);
+        }
+
         Patient p = patientDAO.findById(patientId);
         if (p == null) {
             throw new InvalidPatientDataException("Patient with ID " + patientId + " not found.");
@@ -98,49 +121,67 @@ public class TreatmentService {
         if (activeTreatment != null) {
             activeTreatment.setEndTime(LocalDateTime.now());
             activeTreatment.setTreatmentStatus("COMPLETED");
-            if (completionNotes != null && !completionNotes.trim().isEmpty()) {
-                String existing = activeTreatment.getNotes() != null ? activeTreatment.getNotes() + " | " : "";
-                activeTreatment.setNotes(existing + "Completion: " + completionNotes);
-            }
+            if (diagnosis != null && !diagnosis.isEmpty()) activeTreatment.setDiagnosis(diagnosis);
+            if (medications != null && !medications.isEmpty()) activeTreatment.setMedications(medications);
+            String existingNotes = activeTreatment.getNotes() != null ? activeTreatment.getNotes() : "";
+            activeTreatment.setNotes(existingNotes + (completionNotes != null ? " [Completion: " + completionNotes + "]" : ""));
             treatmentDAO.updateTreatment(activeTreatment);
         }
 
-        PatientStatus oldStatus = p.getCurrentStatus();
+        // Update patient status to TREATED
         patientDAO.updateStatus(patientId, PatientStatus.TREATED, doctorId);
 
-        historyDAO.recordStatusChange(patientId, oldStatus, PatientStatus.TREATED, doctorId,
-                "Treatment completed. Notes: " + completionNotes);
+        historyDAO.recordStatusChange(patientId, PatientStatus.IN_TREATMENT, PatientStatus.TREATED, doctorId,
+                completionNotes != null ? completionNotes : "Clinical treatment course completed successfully.");
 
         activityLogDAO.log(doctorId, "TREATMENT_COMPLETED", "PATIENT", patientId,
-                "Completed treatment for patient " + p.getFullName() + " (" + p.getPatientCode() + ").");
+                "Completed treatment for " + p.getFullName() + " (" + p.getPatientCode() + ").");
 
         return true;
     }
 
     /**
-     * Discharges a treated patient:
-     * - Updates patient status to DISCHARGED.
-     * - Records status history and audit log.
+     * Discharges a treated or stabilized patient (Doctor only).
      */
-    public boolean dischargePatient(int patientId, int doctorId, String dischargeNotes) throws InvalidPatientDataException {
+    public boolean dischargePatient(int patientId, int doctorId, String dischargeSummary) throws InvalidPatientDataException {
+        if (SessionManager.getInstance().isLoggedIn()) {
+            SessionManager.getInstance().requirePermission(Permission.DISCHARGE_PATIENT);
+        }
+
         Patient p = patientDAO.findById(patientId);
         if (p == null) {
             throw new InvalidPatientDataException("Patient with ID " + patientId + " not found.");
         }
 
         if (p.getCurrentStatus() != PatientStatus.TREATED && p.getCurrentStatus() != PatientStatus.IN_TREATMENT) {
-            throw new InvalidPatientDataException("Cannot discharge: Patient must be TREATED or evaluated first.");
+            throw new InvalidPatientDataException("Cannot discharge patient: Current status is " +
+                    p.getCurrentStatus().getDisplayName() + " (must be TREATED or IN_TREATMENT).");
         }
 
         PatientStatus oldStatus = p.getCurrentStatus();
+
+        // If in treatment, close active treatment
+        if (oldStatus == PatientStatus.IN_TREATMENT) {
+            Treatment activeTreatment = treatmentDAO.getActiveTreatmentForPatient(patientId);
+            if (activeTreatment != null) {
+                activeTreatment.setEndTime(LocalDateTime.now());
+                activeTreatment.setTreatmentStatus("COMPLETED");
+                activeTreatment.setNotes((activeTreatment.getNotes() != null ? activeTreatment.getNotes() : "") +
+                        " [Discharged directly: " + dischargeSummary + "]");
+                treatmentDAO.updateTreatment(activeTreatment);
+            }
+        }
+
+        // Update patient status to DISCHARGED
         patientDAO.updateStatus(patientId, PatientStatus.DISCHARGED, doctorId);
 
         historyDAO.recordStatusChange(patientId, oldStatus, PatientStatus.DISCHARGED, doctorId,
-                "Patient discharged. Summary: " + dischargeNotes);
+                dischargeSummary != null ? dischargeSummary : "Patient discharged from emergency department.");
 
         activityLogDAO.log(doctorId, "PATIENT_DISCHARGED", "PATIENT", patientId,
-                "Discharged patient " + p.getFullName() + " (" + p.getPatientCode() + ").");
+                "Discharged patient " + p.getFullName() + " (" + p.getPatientCode() + "). Summary: " + dischargeSummary);
 
+        // Remove from queue if present
         if (queueManager != null) {
             queueManager.remove(patientId);
         }
@@ -148,11 +189,7 @@ public class TreatmentService {
         return true;
     }
 
-    public Treatment getActiveTreatment(int patientId) {
-        return treatmentDAO.getActiveTreatmentForPatient(patientId);
-    }
-
-    public List<Treatment> getTreatmentsForPatient(int patientId) {
+    public List<Treatment> getPatientTreatments(int patientId) {
         return treatmentDAO.getTreatmentsByPatientId(patientId);
     }
 }

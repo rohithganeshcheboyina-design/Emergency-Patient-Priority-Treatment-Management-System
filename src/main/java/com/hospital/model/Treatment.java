@@ -3,7 +3,7 @@ package com.hospital.model;
 import java.time.LocalDateTime;
 
 /**
- * Treatment entity recording doctor care and procedures.
+ * Treatment entity recording doctor care, clinical diagnosis, prescribed medications, and procedures.
  */
 public class Treatment {
     private int treatmentId;
@@ -13,6 +13,8 @@ public class Treatment {
     private LocalDateTime startTime;
     private LocalDateTime endTime;
     private String treatmentStatus; // e.g., IN_PROGRESS, COMPLETED, SUSPENDED
+    private String diagnosis;
+    private String medications;
     private String notes;
 
     public Treatment() {
@@ -29,6 +31,21 @@ public class Treatment {
         this.startTime = startTime != null ? startTime : LocalDateTime.now();
         this.endTime = endTime;
         this.treatmentStatus = treatmentStatus != null ? treatmentStatus : "IN_PROGRESS";
+        this.notes = notes;
+    }
+
+    public Treatment(int treatmentId, int patientId, int doctorId, String doctorName,
+                     LocalDateTime startTime, LocalDateTime endTime, String treatmentStatus,
+                     String diagnosis, String medications, String notes) {
+        this.treatmentId = treatmentId;
+        this.patientId = patientId;
+        this.doctorId = doctorId;
+        this.doctorName = doctorName;
+        this.startTime = startTime != null ? startTime : LocalDateTime.now();
+        this.endTime = endTime;
+        this.treatmentStatus = treatmentStatus != null ? treatmentStatus : "IN_PROGRESS";
+        this.diagnosis = diagnosis;
+        this.medications = medications;
         this.notes = notes;
     }
 
@@ -86,6 +103,22 @@ public class Treatment {
 
     public void setTreatmentStatus(String treatmentStatus) {
         this.treatmentStatus = treatmentStatus;
+    }
+
+    public String getDiagnosis() {
+        return diagnosis;
+    }
+
+    public void setDiagnosis(String diagnosis) {
+        this.diagnosis = diagnosis;
+    }
+
+    public String getMedications() {
+        return medications;
+    }
+
+    public void setMedications(String medications) {
+        this.medications = medications;
     }
 
     public String getNotes() {

@@ -81,33 +81,46 @@ The application calculates dynamic positions (`#1`, `#2`, `#3`...) and recalcula
 - **Dynamic Live Emergency Queue**: Real-time table displaying Position, Token Number (`ER-001`), Patient Code (`P0001`), Name, Severity badge, Arrival Time, Elapsed Wait Time, and Quick Actions.
 - **Overdue Waiting Time Alerts**: Live threshold monitoring flags patients waiting beyond configured thresholds (e.g. Critical $> 15$ min) with visual warning badges.
 - **Doctor's "NEXT PATIENT" Card**: The doctor's dashboard automatically surfaces the patient at the head of the Priority Queue with one-click actions: `[Start Treatment]`, `[View Details]`, `[Complete Treatment]`, and `[Discharge]`.
-- **Intake & Auto-Token System**: Nurses register incoming arrivals with auto-generated patient IDs (`P0001`, `P0002`...) and emergency tokens (`ER-001`, `ER-002`...).
+- **Intake & Auto-Token System**: Nurses register incoming arrivals with auto-generated patient IDs (`P0001`, `P0002`...), emergency tokens (`ER-001`, `ER-002`...), allergies, and emergency contacts.
+- **Vital Signs Monitoring & Dynamic Re-sorting**: Continuous vital signs capture (BP, Pulse, SpO2, Temperature, Respiratory Rate) with dynamic queue re-sorting if a patient's clinical condition changes.
+- **Hospital Bed Inventory & Ward Capacity**: Real-time tracking of General Ward and ICU bed availability, occupancy, cleaning states, and interactive bed assignment/release modals.
+- **Outpatient Appointment Scheduling**: Consultation booking desk with doctor specialty filtering, appointment status transitions, and strict safety isolation from the emergency queue.
+- **Patient Self-Service Portal**: Dedicated patient dashboard to check live queue status, vital signs, upcoming appointments, and past treatment history.
+- **Visual Role Authorization Matrix**: Dedicated UI view rendering all 26 system permissions across Admin, Doctor, Nurse, and Patient with green checkmarks (`✔ ALLOWED`) and red cross marks (`✖ RESTRICTED`).
 - **Non-Blocking Toast Notifications**: When a Critical patient is registered, a department-wide non-blocking slide-down alert is triggered: *"CRITICAL PATIENT ADDED TO EMERGENCY QUEUE"*.
 - **Admin Visual Analytics**: Dynamic JavaFX `PieChart` and `BarChart` components aggregating patient emergency severity, workflow distribution, and average waiting times.
 - **Multi-Filter Reports & CSV Export**: Generate department reports and export structured patient records to CSV with one click.
-- **Immutable Activity & Audit Logs**: Detailed audit logging of all system logins, triage registrations, priority evaluations, and status transitions.
+- **Immutable Activity & Audit Logs**: Detailed audit logging of all system logins, triage registrations, priority evaluations, status transitions, and bed/appointment actions.
 - **Dual Persistence Strategy**: Native MySQL 8.0+ JDBC connectivity with an automatic embedded in-memory database fallback (H2 in MySQL mode) for zero-setup demonstrations.
 
 ---
 
 ## 👥 User Roles & Access Control
 
-Strict Role-Based Access Control (RBAC) is enforced at the controller and view levels:
+Strict Role-Based Access Control (RBAC) is enforced at both the UI element level (hiding unauthorized views and buttons) and the backend service layer via `SessionManager.requirePermission()`:
 
-| Privilege / Capability | Admin 👑 | Doctor 🩺 | Nurse 💉 |
-| :--- | :---: | :---: | :---: |
-| **System Login & Logout** | ✅ | ✅ | ✅ |
-| **Role-Specific Dashboard** | ✅ | ✅ | ✅ |
-| **View Live Emergency Queue** | ✅ | ✅ | ✅ |
-| **Patient Registration & Intake** | ✅ | ❌ | ✅ |
-| **Triage Severity Assessment** | ✅ | ✅ | ✅ |
-| **Doctor "Next Patient" Triage Card** | ❌ | ✅ | ❌ |
-| **Start / Complete Clinical Treatment**| ❌ | ✅ | ❌ |
-| **Patient Discharge** | ❌ | ✅ | ❌ |
-| **Department Reports & CSV Export** | ✅ | ✅ | ❌ |
-| **Staff & User Account Management** | ✅ | ❌ | ❌ |
-| **System Activity & Audit Logs** | ✅ | ❌ | ❌ |
-| **System Settings & Thresholds** | ✅ | ✅ | ✅ |
+| Privilege / Feature | Admin 👑 | Doctor 🩺 | Nurse 💉 | Patient 🧑‍⚕️ |
+| :--- | :---: | :---: | :---: | :---: |
+| **System Login & Logout** | ✔ ALLOWED | ✔ ALLOWED | ✔ ALLOWED | ✔ ALLOWED |
+| **Role-Specific Dashboard** | ✔ ALLOWED | ✔ ALLOWED | ✔ ALLOWED | ✔ ALLOWED |
+| **View Live Emergency Queue** | ✔ ALLOWED | ✔ ALLOWED | ✔ ALLOWED | ✖ RESTRICTED |
+| **Patient Registration & Intake** | ✖ RESTRICTED | ✖ RESTRICTED | ✔ ALLOWED | ✖ RESTRICTED |
+| **Triage Severity Assessment** | ✖ RESTRICTED | ✔ ALLOWED | ✔ ALLOWED | ✖ RESTRICTED |
+| **Update Patient Vital Signs** | ✖ RESTRICTED | ✔ ALLOWED | ✔ ALLOWED | ✖ RESTRICTED |
+| **Doctor "Next Patient" Priority Card** | ✖ RESTRICTED | ✔ ALLOWED | ✖ RESTRICTED | ✖ RESTRICTED |
+| **Start Clinical Treatment** | ✖ RESTRICTED | ✔ ALLOWED | ✖ RESTRICTED | ✖ RESTRICTED |
+| **Complete Treatment & Prescribe** | ✖ RESTRICTED | ✔ ALLOWED | ✖ RESTRICTED | ✖ RESTRICTED |
+| **Discharge Patient** | ✖ RESTRICTED | ✔ ALLOWED | ✖ RESTRICTED | ✖ RESTRICTED |
+| **Manage Bed Allocations (Ward/ICU)** | ✔ ALLOWED | ✖ RESTRICTED | ✔ ALLOWED | ✖ RESTRICTED |
+| **Schedule Outpatient Appointments** | ✔ ALLOWED | ✖ RESTRICTED | ✔ ALLOWED | ✔ ALLOWED |
+| **Department Reports & CSV Export** | ✔ ALLOWED | ✔ ALLOWED | ✖ RESTRICTED | ✖ RESTRICTED |
+| **Staff & User Account Management** | ✔ ALLOWED | ✖ RESTRICTED | ✖ RESTRICTED | ✖ RESTRICTED |
+| **System Activity & Audit Logs** | ✔ ALLOWED | ✖ RESTRICTED | ✖ RESTRICTED | ✖ RESTRICTED |
+| **System Settings & Thresholds** | ✔ ALLOWED | ✖ RESTRICTED | ✖ RESTRICTED | ✖ RESTRICTED |
+| **View Role Authorization Matrix** | ✔ ALLOWED | ✔ ALLOWED | ✔ ALLOWED | ✔ ALLOWED |
+
+> [!NOTE]
+> The **Role Authorization** screen in the application renders this complete live matrix with green checkmark pills and red restriction badges, matching the visual requirements in the project specification.
 
 ---
 
@@ -225,13 +238,14 @@ java -jar target/hospital-emergency-system-1.0.0-jar-with-dependencies.jar
 
 ## 🔑 Demo Credentials
 
-| Role | Username | Password | Full Name & Title |
+| Role | Username | Password | Full Name & Title / Scope |
 | :--- | :--- | :--- | :--- |
-| **Admin** 👑 | `admin` | `admin123` | Hospital Administrator |
+| **Admin** 👑 | `admin` | `admin123` | Hospital Administrator (Full System Oversight) |
 | **Doctor** 🩺 | `doctor` | `doctor123` | Dr. Robert Vance, MD (Emergency Medicine) |
 | **Doctor 2** 🩺 | `doctor2` | `doctor123` | Dr. Sarah Jenkins, MD (Trauma Specialist) |
 | **Nurse** 💉 | `nurse` | `nurse123` | Nurse Clara Barton, RN (Triage Intake) |
 | **Nurse 2** 💉 | `nurse2` | `nurse123` | Nurse David Miller, RN (Triage Station 2) |
+| **Patient** 🧑‍⚕️ | `patient` | `doctor123` | John Doe (Self-Service Patient Portal) |
 
 ---
 
@@ -255,7 +269,7 @@ REGISTERED
 
 ## 🧪 Automated Testing Suite
 
-The project includes an automated JUnit 5 test suite covering priority queue ordering, FIFO-within-priority, patient field validation, authentication, and state transitions.
+The project includes a comprehensive automated JUnit 5 test suite with **26 passing tests (0 failures, 0 errors)** covering priority queue ordering, FIFO-within-priority, clinical validation, RBAC permissions, bed inventory, and outpatient appointments.
 
 Run the test suite using:
 ```powershell
@@ -263,10 +277,24 @@ Run the test suite using:
 ```
 
 ### Test Classes:
-- **`PriorityQueueManagerTest`**: Verifies Critical before High before Medium before Low; verifies arrival-time ordering for identical priorities; asserts the exact scenario from Section 1 of the specification.
-- **`PatientValidationTest`**: Verifies validation rules (blank names, negative age, invalid phone, missing symptoms, null severity).
-- **`AuthenticationServiceTest`**: Verifies BCrypt password hashing, authentication success, wrong credentials rejection, and role matching.
-- **`StatusWorkflowTest`**: Verifies valid transitions and asserts that invalid state jumps (e.g. `DISCHARGED` back to `IN_TREATMENT`) are strictly prevented.
+1. **`PriorityQueueManagerTest`**: Verifies Critical before High before Medium before Low; verifies arrival-time ordering for identical priorities; asserts the exact specification scenario (A, C, B, D).
+2. **`PatientValidationTest`**: Verifies clinical validation rules (blank names, negative age, invalid phone, missing symptoms, null severity).
+3. **`AuthenticationServiceTest`**: Verifies BCrypt salted hashing, authentication success, wrong credentials rejection, and role matching.
+4. **`StatusWorkflowTest`**: Verifies valid transitions and asserts that invalid state jumps (e.g. `DISCHARGED` back to `IN_TREATMENT`) are strictly prevented.
+5. **`RoleAuthorizationTest`**: Verifies granular RBAC enforcement across Admin, Doctor, Nurse, and Patient roles, ensuring unauthorized operations throw `UnauthorizedException`.
+6. **`BedManagementTest`**: Tests bed inventory tracking, ward vs. ICU capacity metrics, patient bed allocation, and bed discharge/cleaning release.
+7. **`AppointmentServiceTest`**: Validates outpatient booking with doctor scheduling, duplicate time slot prevention, cancellation, and isolation from emergency queue.
+8. **`TreatmentServiceTest`**: Tests clinical workflow start, complete, and discharge by doctor, ensuring nurses and admins cannot start or complete treatments.
+
+---
+
+## 🔄 Continuous Integration (CI/CD)
+
+Automated testing and compilation are configured via GitHub Actions in [`.github/workflows/ci.yml`](.github/workflows/ci.yml). Every push or pull request to `master` automatically triggers:
+- JDK 17 environment setup.
+- Clean Maven compilation.
+- Execution of all 26 unit tests.
+- Standalone shaded JAR packaging.
 
 ---
 

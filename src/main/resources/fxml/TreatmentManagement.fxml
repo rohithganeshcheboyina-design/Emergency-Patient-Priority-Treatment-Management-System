@@ -44,7 +44,9 @@
                     <TableColumn fx:id="colEmergency" prefWidth="130.0" text="Emergency Level" />
                     <TableColumn fx:id="colDoctor" prefWidth="160.0" text="Attending Doctor" />
                     <TableColumn fx:id="colStartTime" prefWidth="130.0" text="Start Time" />
-                    <TableColumn fx:id="colStatus" prefWidth="120.0" text="Treatment Status" />
+                    <TableColumn fx:id="colStatus" prefWidth="110.0" text="Treatment Status" />
+                    <TableColumn fx:id="colDiagnosis" prefWidth="150.0" text="Clinical Diagnosis" />
+                    <TableColumn fx:id="colMedications" prefWidth="180.0" text="Medications / Rx" />
                     <TableColumn fx:id="colNotes" prefWidth="250.0" text="Clinical Notes" />
                 </columns>
                 <placeholder>
@@ -58,9 +60,17 @@
             <Label style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #0F172A;" text="Clinical Note Update &amp; Action for Selected Patient" />
 
             <GridPane hgap="16.0" vgap="10.0">
-                <VBox spacing="4.0" GridPane.columnIndex="0" GridPane.hgrow="ALWAYS">
+                <VBox spacing="4.0" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.hgrow="ALWAYS">
                     <Label styleClass="form-label" text="Selected Patient:" />
                     <Label fx:id="lblSelectedPatientInfo" style="-fx-font-weight: bold; -fx-font-size: 14px; -fx-text-fill: #0284C7;" text="Select a row in the table above" />
+                </VBox>
+                <VBox spacing="4.0" GridPane.columnIndex="0" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1">
+                    <Label styleClass="form-label" text="Clinical Diagnosis:" />
+                    <TextField fx:id="txtDiagnosis" promptText="e.g. Acute Coronary Syndrome, Stable Angina, Blunt Trauma" />
+                </VBox>
+                <VBox spacing="4.0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1">
+                    <Label styleClass="form-label" text="Medications / Orders:" />
+                    <TextField fx:id="txtMedications" promptText="e.g. Aspirin 325mg PO, Normal Saline 500mL IV bolus" />
                 </VBox>
             </GridPane>
 

@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**
- * Patient entity representing an emergency department admission.
+ * Patient entity representing an emergency department admission with complete triage demographics and vitals.
  */
 public class Patient {
     private int patientId;
@@ -17,6 +17,16 @@ public class Patient {
     private String phone;
     private String address;
     private String bloodGroup;
+    private String allergies;
+    private String emergencyContact;
+
+    // Vital Signs
+    private String vitalBp; // e.g. 120/80 mmHg
+    private Integer vitalHeartRate; // bpm
+    private Double vitalTemperature; // °F or °C
+    private Integer vitalSpo2; // %
+    private Integer vitalRespiratoryRate; // breaths/min
+
     private String symptoms;
     private EmergencyLevel emergencyLevel;
     private int priority;
@@ -129,6 +139,62 @@ public class Patient {
 
     public void setBloodGroup(String bloodGroup) {
         this.bloodGroup = bloodGroup;
+    }
+
+    public String getAllergies() {
+        return allergies;
+    }
+
+    public void setAllergies(String allergies) {
+        this.allergies = allergies;
+    }
+
+    public String getEmergencyContact() {
+        return emergencyContact;
+    }
+
+    public void setEmergencyContact(String emergencyContact) {
+        this.emergencyContact = emergencyContact;
+    }
+
+    public String getVitalBp() {
+        return vitalBp;
+    }
+
+    public void setVitalBp(String vitalBp) {
+        this.vitalBp = vitalBp;
+    }
+
+    public Integer getVitalHeartRate() {
+        return vitalHeartRate;
+    }
+
+    public void setVitalHeartRate(Integer vitalHeartRate) {
+        this.vitalHeartRate = vitalHeartRate;
+    }
+
+    public Double getVitalTemperature() {
+        return vitalTemperature;
+    }
+
+    public void setVitalTemperature(Double vitalTemperature) {
+        this.vitalTemperature = vitalTemperature;
+    }
+
+    public Integer getVitalSpo2() {
+        return vitalSpo2;
+    }
+
+    public void setVitalSpo2(Integer vitalSpo2) {
+        this.vitalSpo2 = vitalSpo2;
+    }
+
+    public Integer getVitalRespiratoryRate() {
+        return vitalRespiratoryRate;
+    }
+
+    public void setVitalRespiratoryRate(Integer vitalRespiratoryRate) {
+        this.vitalRespiratoryRate = vitalRespiratoryRate;
     }
 
     public String getSymptoms() {

@@ -22,6 +22,15 @@ public class User {
         this.createdAt = LocalDateTime.now();
     }
 
+    public User(int userId, String username, String fullName, String email, Role role) {
+        this();
+        this.userId = userId;
+        this.username = username;
+        this.fullName = fullName;
+        this.email = email;
+        this.role = role;
+    }
+
     public User(int userId, String username, String passwordHash, String fullName, Role role,
                 String phone, String email, boolean active, LocalDateTime createdAt) {
         this.userId = userId;

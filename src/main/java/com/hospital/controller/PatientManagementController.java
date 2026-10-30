@@ -24,6 +24,7 @@ public class PatientManagementController extends BaseController {
     @FXML private ComboBox<String> cmbFilterLevel;
     @FXML private ComboBox<String> cmbFilterStatus;
     @FXML private Label lblTotalCountBadge;
+    @FXML private Button btnRegisterPatient;
 
     @FXML private TableView<Patient> tblPatients;
     @FXML private TableColumn<Patient, String> colCode;
@@ -41,6 +42,11 @@ public class PatientManagementController extends BaseController {
 
     @Override
     public void onAttached() {
+        boolean canRegister = com.hospital.security.SessionManager.getInstance().hasPermission(com.hospital.model.Permission.REGISTER_PATIENTS);
+        if (btnRegisterPatient != null) {
+            btnRegisterPatient.setVisible(canRegister);
+            btnRegisterPatient.setManaged(canRegister);
+        }
         initFilters();
         initTable();
         loadPatients();
@@ -219,6 +225,10 @@ public class PatientManagementController extends BaseController {
 
     @FXML
     public void handleNewRegistration() {
+        if (!com.hospital.security.SessionManager.getInstance().hasPermission(com.hospital.model.Permission.REGISTER_PATIENTS)) {
+            com.hospital.util.AlertHelper.showError("Access Denied", "Only triage nurses are authorized to register incoming emergency patients.");
+            return;
+        }
         if (mainLayoutController != null) {
             mainLayoutController.handleNavRegister();
         }

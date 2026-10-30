@@ -199,7 +199,9 @@ public class DoctorDashboardController extends BaseController {
     @FXML
     public void handleViewNextPatientDetails() {
         if (currentNextPatient != null && mainLayoutController != null) {
-            mainLayoutController.handleNavPatients();
+            PatientDetailController.setSelectedPatientId(currentNextPatient.getPatientId());
+            mainLayoutController.loadView("/fxml/PatientDetail.fxml",
+                    "Patient Clinical Profile - " + currentNextPatient.getPatientName(), null);
         }
     }
 

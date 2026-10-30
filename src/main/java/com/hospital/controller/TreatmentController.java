@@ -37,10 +37,14 @@ public class TreatmentController extends BaseController {
     @FXML private TableColumn<TreatmentRow, String> colDoctor;
     @FXML private TableColumn<TreatmentRow, String> colStartTime;
     @FXML private TableColumn<TreatmentRow, String> colStatus;
+    @FXML private TableColumn<TreatmentRow, String> colDiagnosis;
+    @FXML private TableColumn<TreatmentRow, String> colMedications;
     @FXML private TableColumn<TreatmentRow, String> colNotes;
 
     @FXML private VBox boxTreatmentActions;
     @FXML private Label lblSelectedPatientInfo;
+    @FXML private TextField txtDiagnosis;
+    @FXML private TextField txtMedications;
     @FXML private TextArea txtClinicalNotes;
     @FXML private Button btnComplete;
     @FXML private Button btnDischarge;
@@ -71,6 +75,8 @@ public class TreatmentController extends BaseController {
         colDoctor.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().treatment.getDoctorName()));
         colStartTime.setCellValueFactory(cellData -> new SimpleStringProperty(formatDateTime(cellData.getValue().treatment.getStartTime())));
         colStatus.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().treatment.getTreatmentStatus()));
+        colDiagnosis.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().treatment.getDiagnosis() != null ? cellData.getValue().treatment.getDiagnosis() : "--"));
+        colMedications.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().treatment.getMedications() != null ? cellData.getValue().treatment.getMedications() : "--"));
         colNotes.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().treatment.getNotes()));
 
         colEmergency.setCellFactory(column -> new TableCell<>() {
@@ -132,6 +138,8 @@ public class TreatmentController extends BaseController {
     private void updateSelectedPanel() {
         if (selectedRow == null) {
             lblSelectedPatientInfo.setText("No patient selected.");
+            if (txtDiagnosis != null) txtDiagnosis.clear();
+            if (txtMedications != null) txtMedications.clear();
             txtClinicalNotes.clear();
             btnComplete.setDisable(true);
             btnDischarge.setDisable(true);
@@ -142,6 +150,8 @@ public class TreatmentController extends BaseController {
         Treatment t = selectedRow.treatment;
         lblSelectedPatientInfo.setText(p.getFullName() + " [" + p.getTokenNumber() + "] (" +
                 p.getEmergencyLevel().getDisplayName() + ") - Status: " + t.getTreatmentStatus());
+        if (txtDiagnosis != null) txtDiagnosis.setText(t.getDiagnosis() != null ? t.getDiagnosis() : "");
+        if (txtMedications != null) txtMedications.setText(t.getMedications() != null ? t.getMedications() : "");
         txtClinicalNotes.setText(t.getNotes() != null ? t.getNotes() : "");
 
         boolean inProgress = "IN_PROGRESS".equalsIgnoreCase(t.getTreatmentStatus());
@@ -152,9 +162,11 @@ public class TreatmentController extends BaseController {
     @FXML
     public void handleSaveNotes() {
         if (selectedRow == null) return;
+        if (txtDiagnosis != null) selectedRow.treatment.setDiagnosis(txtDiagnosis.getText().trim());
+        if (txtMedications != null) selectedRow.treatment.setMedications(txtMedications.getText().trim());
         selectedRow.treatment.setNotes(txtClinicalNotes.getText());
         treatmentDAO.updateTreatment(selectedRow.treatment);
-        NotificationManager.showInfo("Saved", "Clinical treatment notes updated.");
+        NotificationManager.showInfo("Saved", "Clinical treatment diagnosis, medications, and notes updated.");
         loadTreatments();
     }
 
@@ -164,11 +176,17 @@ public class TreatmentController extends BaseController {
         User doctor = SessionManager.getInstance().getCurrentUser();
         int docId = doctor != null ? doctor.getUserId() : selectedRow.treatment.getDoctorId();
 
+        String diag = txtDiagnosis != null ? txtDiagnosis.getText().trim() : null;
+        String meds = txtMedications != null ? txtMedications.getText().trim() : null;
+        String notes = txtClinicalNotes.getText();
+
         try {
             mainLayoutController.getTreatmentService().completeTreatment(
                     selectedRow.patient.getPatientId(),
                     docId,
-                    txtClinicalNotes.getText()
+                    diag,
+                    meds,
+                    notes
             );
             NotificationManager.showInfo("Treatment Concluded", selectedRow.patient.getFullName() + " marked as TREATED.");
             loadTreatments();

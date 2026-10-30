@@ -151,29 +151,44 @@ public class LiveQueueController extends BaseController {
             }
         });
 
-        // Row factory for highlighting critical patients
-        tblLiveQueue.setRowFactory(tv -> new TableRow<>() {
-            @Override
-            protected void updateItem(QueueItem item, boolean empty) {
-                super.updateItem(item, empty);
-                getStyleClass().remove("table-row-critical");
-                if (item != null && !empty && item.getEmergencyLevel() == EmergencyLevel.CRITICAL) {
-                    getStyleClass().add("table-row-critical");
+        // Row factory for highlighting critical patients & double-click to view details
+        tblLiveQueue.setRowFactory(tv -> {
+            TableRow<QueueItem> row = new TableRow<>() {
+                @Override
+                protected void updateItem(QueueItem item, boolean empty) {
+                    super.updateItem(item, empty);
+                    getStyleClass().remove("table-row-critical");
+                    if (item != null && !empty && item.getEmergencyLevel() == EmergencyLevel.CRITICAL) {
+                        getStyleClass().add("table-row-critical");
+                    }
                 }
-            }
+            };
+            row.setOnMouseClicked(event -> {
+                if (event.getClickCount() == 2 && !row.isEmpty()) {
+                    QueueItem qi = row.getItem();
+                    if (qi != null && mainLayoutController != null) {
+                        PatientDetailController.setSelectedPatientId(qi.getPatientId());
+                        mainLayoutController.loadView("/fxml/PatientDetail.fxml", "Patient Profile: " + qi.getPatientName(), null);
+                    }
+                }
+            });
+            return row;
         });
 
-        // Actions column with Call to Bay & Start Treatment
+        // Actions column with RBAC role enforcement (Treat: Doctor only, Call: Nurse/Doctor)
         colActions.setCellFactory(param -> new TableCell<>() {
             private final Button btnCall = new Button("Call");
             private final Button btnTreat = new Button("Treat");
-            private final HBox pane = new HBox(6, btnCall, btnTreat);
+            private final Button btnView = new Button("View");
+            private final HBox pane = new HBox(6);
 
             {
                 btnCall.getStyleClass().add("btn-secondary");
                 btnCall.setStyle("-fx-font-size: 11px; -fx-padding: 3px 8px;");
                 btnTreat.getStyleClass().add("btn-primary");
                 btnTreat.setStyle("-fx-font-size: 11px; -fx-padding: 3px 8px;");
+                btnView.getStyleClass().add("btn-secondary");
+                btnView.setStyle("-fx-font-size: 11px; -fx-padding: 3px 8px;");
                 pane.setAlignment(Pos.CENTER);
 
                 btnCall.setOnAction(e -> {
@@ -185,6 +200,14 @@ public class LiveQueueController extends BaseController {
                     QueueItem qi = getTableView().getItems().get(getIndex());
                     handleStartTreatment(qi);
                 });
+
+                btnView.setOnAction(e -> {
+                    QueueItem qi = getTableView().getItems().get(getIndex());
+                    if (mainLayoutController != null) {
+                        PatientDetailController.setSelectedPatientId(qi.getPatientId());
+                        mainLayoutController.loadView("/fxml/PatientDetail.fxml", "Patient Profile: " + qi.getPatientName(), null);
+                    }
+                });
             }
 
             @Override
@@ -194,7 +217,22 @@ public class LiveQueueController extends BaseController {
                     setGraphic(null);
                 } else {
                     QueueItem qi = getTableView().getItems().get(getIndex());
-                    btnCall.setDisable(qi.getStatus() == PatientStatus.CALLED);
+                    pane.getChildren().clear();
+
+                    boolean canTreat = SessionManager.getInstance().hasPermission(Permission.START_TREATMENT);
+                    boolean canCall = SessionManager.getInstance().hasPermission(Permission.CALL_PATIENT);
+
+                    if (canCall) {
+                        btnCall.setDisable(qi.getStatus() == PatientStatus.CALLED);
+                        pane.getChildren().add(btnCall);
+                    }
+                    if (canTreat) {
+                        pane.getChildren().add(btnTreat);
+                    }
+                    if (!canTreat && !canCall) {
+                        pane.getChildren().add(btnView);
+                    }
+
                     setGraphic(pane);
                 }
             }
@@ -252,6 +290,11 @@ public class LiveQueueController extends BaseController {
     }
 
     private void handleCallPatient(QueueItem item) {
+        if (!SessionManager.getInstance().hasPermission(Permission.CALL_PATIENT)) {
+            AlertHelper.showError("Access Denied", "You do not have permission to summon patients.");
+            return;
+        }
+
         User staff = SessionManager.getInstance().getCurrentUser();
         int staffId = staff != null ? staff.getUserId() : 4;
 
@@ -271,13 +314,21 @@ public class LiveQueueController extends BaseController {
     }
 
     private void handleStartTreatment(QueueItem item) {
+        if (!SessionManager.getInstance().hasPermission(Permission.START_TREATMENT)) {
+            AlertHelper.showError("Access Denied", "Only physicians (Doctors) are authorized to initiate treatment.");
+            return;
+        }
+
         User doctor = SessionManager.getInstance().getCurrentUser();
-        int docId = doctor != null ? doctor.getUserId() : 2;
+        if (doctor == null || doctor.getRole() != Role.DOCTOR) {
+            AlertHelper.showError("Access Denied", "Only physicians (Doctors) are authorized to initiate treatment.");
+            return;
+        }
 
         try {
             mainLayoutController.getTreatmentService().startTreatment(
                     item.getPatientId(),
-                    docId,
+                    doctor.getUserId(),
                     "Emergency treatment started from Live Queue."
             );
             NotificationManager.showInfo("Treatment Started", "Patient " + item.getPatientName() + " moved to IN_TREATMENT.");

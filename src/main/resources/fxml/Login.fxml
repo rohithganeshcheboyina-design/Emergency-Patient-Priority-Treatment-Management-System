@@ -94,10 +94,11 @@
         <!-- Quick Demo Accounts Helper -->
         <VBox maxWidth="380.0" spacing="8.0">
             <Label style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #64748B;" text="QUICK DEMO CREDENTIALS (CLICK TO AUTO-FILL):" />
-            <HBox spacing="8.0">
+            <HBox spacing="6.0">
                 <Button onAction="#fillAdminDemo" styleClass="btn-secondary" text="👑 Admin" HBox.hgrow="ALWAYS" />
                 <Button onAction="#fillDoctorDemo" styleClass="btn-secondary" text="🩺 Doctor" HBox.hgrow="ALWAYS" />
                 <Button onAction="#fillNurseDemo" styleClass="btn-secondary" text="💉 Nurse" HBox.hgrow="ALWAYS" />
+                <Button onAction="#fillPatientDemo" styleClass="btn-secondary" text="👤 Patient" HBox.hgrow="ALWAYS" />
             </HBox>
             <Label style="-fx-font-size: 10px; -fx-text-fill: #94A3B8;" text="Admin: admin/admin123 | Doctor: doctor/doctor123 | Nurse: nurse/nurse123" />
         </VBox>

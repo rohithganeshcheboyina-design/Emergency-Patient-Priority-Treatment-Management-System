@@ -1,11 +1,12 @@
 package com.hospital.security;
 
 import com.hospital.exception.UnauthorizedException;
+import com.hospital.model.Permission;
 import com.hospital.model.Role;
 import com.hospital.model.User;
 
 /**
- * Manages the current logged-in user session and role authorization.
+ * Manages the current logged-in user session and strict Role-Based Access Control (RBAC).
  */
 public class SessionManager {
 
@@ -43,7 +44,8 @@ public class SessionManager {
 
     public synchronized void requireRole(Role role) {
         if (!hasRole(role)) {
-            throw new UnauthorizedException("Access Denied: Requires " + role.getDisplayName() + " privilege.");
+            String roleName = role != null ? role.getDisplayName() : "Authorized";
+            throw new UnauthorizedException("Access Denied: Requires " + roleName + " privilege.");
         }
     }
 
@@ -57,5 +59,22 @@ public class SessionManager {
             }
         }
         throw new UnauthorizedException("Access Denied: You do not have permission to access this module.");
+    }
+
+    public synchronized boolean hasPermission(Permission permission) {
+        if (currentUser == null || currentUser.getRole() == null || permission == null) {
+            return false;
+        }
+        return currentUser.getRole().hasPermission(permission);
+    }
+
+    public synchronized void requirePermission(Permission permission) {
+        if (currentUser == null) {
+            throw new UnauthorizedException("Access Denied: User is not authenticated.");
+        }
+        if (!hasPermission(permission)) {
+            throw new UnauthorizedException("Access Denied: Missing required permission [" +
+                    (permission != null ? permission.getTitle() : "Unknown") + "].");
+        }
     }
 }

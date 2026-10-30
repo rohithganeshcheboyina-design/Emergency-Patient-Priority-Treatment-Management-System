@@ -6,12 +6,13 @@ import com.hospital.dao.PatientDAO;
 import com.hospital.dao.PatientStatusHistoryDAO;
 import com.hospital.exception.InvalidPatientDataException;
 import com.hospital.model.*;
+import com.hospital.security.SessionManager;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 /**
- * Service managing patient registration, updates, and status workflow transitions.
+ * Service managing patient registration, vitals updates, and status workflow transitions.
  */
 public class PatientService {
 
@@ -71,6 +72,11 @@ public class PatientService {
      * and inserts the patient into the live priority queue.
      */
     public Patient registerPatient(Patient patient, int registeredByUserId) throws InvalidPatientDataException {
+        // Enforce RBAC permission if logged in
+        if (SessionManager.getInstance().isLoggedIn()) {
+            SessionManager.getInstance().requirePermission(Permission.REGISTER_PATIENTS);
+        }
+
         validatePatient(patient);
 
         if (patient.getArrivalTime() == null) {
@@ -110,6 +116,46 @@ public class PatientService {
         }
 
         return patient;
+    }
+
+    /**
+     * Updates vital signs, symptoms observation, and triage severity level.
+     */
+    public boolean updateVitals(int patientId, String bp, Integer hr, Double temp, Integer spo2, Integer rr,
+                                String symptoms, EmergencyLevel level, int updatedByUserId, String notes) throws InvalidPatientDataException {
+        if (SessionManager.getInstance().isLoggedIn()) {
+            SessionManager.getInstance().requirePermission(Permission.UPDATE_PATIENT_VITALS);
+        }
+
+        Patient p = patientDAO.findById(patientId);
+        if (p == null) {
+            throw new InvalidPatientDataException("Patient with ID " + patientId + " not found.");
+        }
+
+        boolean updated = patientDAO.updateVitals(patientId, bp, hr, temp, spo2, rr, symptoms, level);
+        if (updated) {
+            if (level != null && level != p.getEmergencyLevel()) {
+                // Record new triage re-assessment
+                EmergencyAssessment assessment = new EmergencyAssessment();
+                assessment.setPatientId(patientId);
+                assessment.setEmergencyLevel(level);
+                assessment.setPriority(level.getPriority());
+                assessment.setSymptoms(symptoms != null ? symptoms : p.getSymptoms());
+                assessment.setAssessedBy(updatedByUserId);
+                assessment.setAssessedAt(LocalDateTime.now());
+                assessment.setNotes(notes != null ? notes : "Triage vitals update & severity reassessment.");
+                assessmentDAO.createAssessment(assessment);
+
+                // Update live priority queue dynamically
+                if (queueManager != null && p.getCurrentStatus().isActiveInQueue()) {
+                    queueManager.updatePriority(patientId, level);
+                }
+            }
+
+            activityLogDAO.log(updatedByUserId, "VITALS_UPDATED", "PATIENT", patientId,
+                    "Updated clinical vitals and triage notes for patient " + p.getFullName() + " (" + p.getPatientCode() + ").");
+        }
+        return updated;
     }
 
     /**

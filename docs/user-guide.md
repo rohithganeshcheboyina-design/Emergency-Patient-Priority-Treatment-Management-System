@@ -22,6 +22,7 @@ The **Hospital Emergency Patient Priority Management System** provides hospital 
 | **Doctor 2** | `doctor2` | `doctor123` | Trauma specialist clinical workstation |
 | **Nurse** | `nurse` | `nurse123` | Triage intake, patient registration, priority assignment |
 | **Nurse 2** | `nurse2` | `nurse123` | Emergency ward intake |
+| **Patient** | `patient` | `doctor123` | Self-service patient portal, queue status, appointment booking |
 
 > [!TIP]
 > Use the **Quick Demo Credentials** buttons at the bottom of the login screen to auto-fill credentials with one click.
@@ -38,6 +39,8 @@ The **Hospital Emergency Patient Priority Management System** provides hospital 
    - **Age** (Years) and **Gender** (Required)
    - **Phone Number** (Required)
    - **Blood Group** and **Address** (Optional)
+   - **Allergies & Medical Alerts** (Optional, e.g. Penicillin, NSAIDs)
+   - **Emergency Contact** (Optional, Name and Contact Number)
    - **Assign Doctor** (Optional, selected from active doctors)
 4. Under **Emergency Severity & Triage Assessment**:
    - Describe chief complaints and observations in **Symptoms Description**.
@@ -49,7 +52,14 @@ The **Hospital Emergency Patient Priority Management System** provides hospital 
 5. Click **➕ Register & Enqueue Patient**.
 6. The patient is instantly saved to the database and entered into the active **Priority Queue**. If the patient is `CRITICAL`, a high-priority in-app alert is broadcast across the department.
 
-#### Step 2: Monitoring the Live Emergency Queue
+#### Step 2: Monitoring & Updating Patient Vital Signs
+1. From either the **Live Emergency Queue** or **Patient Management** directory, double-click any patient row to open their **Patient Detail Profile**.
+2. Review their recorded **Blood Pressure**, **Heart Rate (bpm)**, **Temperature (°C)**, **SpO2 (%)**, and **Respiratory Rate**.
+3. To record fresh vitals or reflect condition changes, click **🩺 Update Vitals**:
+   - A dialog appears allowing nurses or doctors to enter updated physiological readings.
+   - If the patient's condition changes (e.g. from HIGH to CRITICAL), the system automatically updates their priority tier and re-sorts their position in the active queue.
+
+#### Step 3: Monitoring the Live Emergency Queue
 1. Click **⚡ Live Emergency Queue** in the sidebar.
 2. Review the live sorted queue:
    - Priority 1 cases are placed at the top, followed by Priority 2, Priority 3, and Priority 4.
@@ -111,7 +121,71 @@ The **Hospital Emergency Patient Priority Management System** provides hospital 
 
 ---
 
-### 6. System Settings
+### 6. Bed Management Workflow (Admin & Nurse)
+
+#### Step 1: Viewing Ward & ICU Capacity
+1. Click **🛏️ Bed Management** in the sidebar.
+2. Review real-time capacity KPI cards:
+   - **Total Beds**
+   - **Available Beds**
+   - **Occupied Beds**
+   - **Under Cleaning / Maintenance**
+3. Use the **Type Filter** (All, General Ward, ICU, Triage Bay) and **Status Filter** (All, Available, Occupied, Maintenance, Cleaning) to find specific bed vacancies.
+
+#### Step 2: Assigning a Bed to a Patient
+1. Click the **Assign Bed** button on any `AVAILABLE` bed row.
+2. An interactive dialog displays currently waiting or active patients.
+3. Select the patient and click **Confirm Assignment**.
+4. The bed status transitions to `OCCUPIED` and links directly to that patient.
+
+#### Step 3: Releasing & Cleaning Beds
+1. When a patient is discharged or transferred, click **Discharge / Release** on their occupied bed row.
+2. The bed transitions to `CLEANING` or `AVAILABLE` once sanitized.
+
+---
+
+### 7. Outpatient Appointments Workflow
+
+#### Step 1: Booking a Doctor Consultation
+1. Click **📅 Appointments** in the sidebar.
+2. Fill out the booking form:
+   - **Patient Name** and **Contact Phone**
+   - **Select Doctor** (filtered by specialty: Emergency Medicine, Trauma Specialist, General Practice)
+   - **Appointment Date** and **Preferred Time Slot**
+   - **Reason for Visit / Symptoms**
+3. Click **Book Appointment**.
+4. The consultation is saved and confirmed. Note that outpatient appointments remain strictly separated from the emergency priority queue.
+
+#### Step 2: Managing Scheduled Appointments
+1. Review the appointment ledger sorted by scheduled date.
+2. Authorized staff can mark appointments as `COMPLETED` after the visit or `CANCELLED` if requested.
+
+---
+
+### 8. Patient Self-Service Portal
+
+1. Log in with patient credentials (`patient` / `doctor123`).
+2. The **Patient Dashboard** displays:
+   - **Active Triage Card**: Live queue position, current status (`WAITING`, `CALLED`, `IN_TREATMENT`, `DISCHARGED`), and assigned emergency doctor.
+   - **Latest Vital Signs**: Recorded blood pressure, pulse, SpO2, and temperature.
+   - **Upcoming Outpatient Appointments**: Scheduled doctor consultations with a one-click **Cancel Appointment** option.
+   - **Treatment History**: Comprehensive summary of previous hospital visits, doctor diagnoses, and prescribed medication orders.
+
+---
+
+### 9. Role Authorization Matrix
+
+1. Click **🔒 Role Authorization** in the sidebar.
+2. Review the comprehensive permissions matrix detailing all 26 system permissions mapped across:
+   - **Admin** 👑
+   - **Doctor** 🩺
+   - **Nurse** 💉
+   - **Patient** 🧑‍⚕️
+3. Each privilege clearly displays a green checkmark (`✔ ALLOWED`) or red cross badge (`✖ RESTRICTED`), providing instant transparency into the system's strict security boundaries.
+
+---
+
+### 10. System Settings
 
 1. Click **⚙️ System Settings** in the sidebar.
 2. Adjust waiting-time overdue alert thresholds:

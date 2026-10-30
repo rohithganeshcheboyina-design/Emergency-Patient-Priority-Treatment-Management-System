@@ -11,13 +11,15 @@ graph TD
     subgraph Presentation Layer
         FXML[JavaFX Views / FXML Layouts]
         CSS[Theme CSS Stylesheets]
-        CTRL[UI Controllers: Login, Dashboards, Queue, Patients]
+        CTRL[UI Controllers: Login, Dashboards, Queue, Patients, Beds, Appointments, RoleAuth]
     end
 
     subgraph Service & Business Logic Layer
         AUTH[AuthenticationService & SessionManager]
         PAT[PatientService]
         TRT[TreatmentService]
+        BED[BedService]
+        APT[AppointmentService]
         RPT[ReportService & Analytics]
         PQM[PriorityQueueManager - Core DSA Engine]
     end
@@ -27,6 +29,8 @@ graph TD
         PDAO[PatientDAO]
         EDAO[EmergencyAssessmentDAO]
         TDAO[TreatmentDAO]
+        BDAO[BedDAO]
+        ADAO[AppointmentDAO]
         HDAO[PatientStatusHistoryDAO]
         LDAO[ActivityLogDAO]
         RDAO[ReportDAO]
@@ -43,6 +47,8 @@ graph TD
     CTRL --> AUTH
     CTRL --> PAT
     CTRL --> TRT
+    CTRL --> BED
+    CTRL --> APT
     CTRL --> RPT
     CTRL --> PQM
 
@@ -58,10 +64,18 @@ graph TD
     TRT --> LDAO
     TRT --> PQM
 
+    BED --> BDAO
+    BED --> LDAO
+
+    APT --> ADAO
+    APT --> LDAO
+
     PDAO --> DBC
     UDAO --> DBC
     EDAO --> DBC
     TDAO --> DBC
+    BDAO --> DBC
+    ADAO --> DBC
     HDAO --> DBC
     LDAO --> DBC
     RDAO --> DBC
@@ -84,13 +98,17 @@ graph TD
 - **Controllers**:
   - `LoginController`: Authenticates credentials against the database, validates non-empty inputs, verifies selected roles, and controls session bootstrap.
   - `AdminDashboardController`: Aggregates real-time statistics and renders interactive JavaFX charts (`PieChart`, `BarChart`).
-  - `DoctorDashboardController`: Displays department KPIs and features the **NEXT PATIENT** triage card driven by the Priority Queue.
-  - `NurseDashboardController`: Triage workstation with quick patient registration shortcuts and live queue preview.
-  - `PatientRegistrationController`: Validates patient demographics, captures symptoms, assesses severity level, generates unique tokens, and automatically enqueues patients.
-  - `LiveQueueController`: Real-time queue table with dynamic sorting, search, severity filters, and wait-time threshold alerts.
+  - `DoctorDashboardController`: Displays department KPIs and features the **NEXT PATIENT** triage card driven by the Priority Queue with direct links to patient details.
+  - `NurseDashboardController`: Triage workstation with quick patient registration shortcuts, live queue preview, and vital sign monitoring.
+  - `PatientDashboardController`: Self-service portal for patients to view active triage status, vital signs, outpatient appointments, and historical treatment notes.
+  - `PatientRegistrationController`: Validates patient demographics, captures symptoms, assesses severity level, records allergies and emergency contact, generates unique tokens, and automatically enqueues patients.
+  - `LiveQueueController`: Real-time queue table with dynamic sorting, search, severity filters, wait-time threshold alerts, and double-click patient detail drill-down.
   - `PatientManagementController`: Directory table with multi-parameter filtering and full profile inspection.
-  - `PatientDetailController`: Comprehensive patient timeline showing demographics, triage notes, treatments, and audit transitions.
-  - `TreatmentController`: Dedicated doctor workstation for recording medications, procedures, completion, and discharge.
+  - `PatientDetailController`: Comprehensive patient timeline showing demographics, vital signs (BP, Pulse, SpO2, Temp, RR), allergies, emergency contact, clinical diagnosis, prescribed medications, and interactive vital update modal.
+  - `TreatmentController`: Dedicated doctor workstation for recording clinical diagnosis, medications, care procedures, completion, and discharge.
+  - `BedManagementController`: Real-time emergency ward and ICU bed capacity monitor with interactive patient bed allocation and release.
+  - `AppointmentManagementController`: Outpatient booking desk with doctor specialty filtering and cancellation management.
+  - `RoleAuthorizationController`: Visual RBAC matrix displaying all 26 system permissions mapped across Admin, Doctor, Nurse, and Patient with green checkmarks (`✔ ALLOWED`) and red cross marks (`✖ RESTRICTED`).
   - `ReportsController`: Analytical reporting engine with multi-report generation and CSV export.
   - `ActivityLogsController`: Immutable audit log inspector.
   - `UserManagementController`: Administrative staff CRUD and role assignments.
@@ -103,14 +121,22 @@ graph TD
     1. **Primary Sort**: Emergency Level (`1 = CRITICAL`, `2 = HIGH`, `3 = MEDIUM`, `4 = LOW`).
     2. **Secondary Sort**: Arrival Timestamp (earliest arrival first).
     3. **Tie-Breaker**: Deterministic patient identifier.
+  - Supports dynamic re-sorting via `updatePriority()` when a patient's vital signs deteriorate or change.
   - Re-heaps dynamically when new patients arrive, severity is re-assessed, treatment starts, or discharge occurs.
 - **`PatientService`**:
   - Enforces field validation rules (name, age range, valid phone, non-empty symptoms).
   - Handles the patient status workflow state machine.
+  - Manages vital signs updates and triggers queue re-sorting on triage severity changes.
 - **`TreatmentService`**:
   - Manages clinical intervention lifecycles (`IN_PROGRESS` -> `COMPLETED` -> `DISCHARGED`).
+  - Records clinical diagnosis and prescribed medication orders.
+  - Strictly enforces that only authorized doctors can start, update, or complete treatments.
+- **`BedService`**:
+  - Tracks bed capacity, availability, cleaning status, and ward vs. ICU allocation.
+- **`AppointmentService`**:
+  - Schedules outpatient consultations while keeping them cleanly isolated from the emergency queue.
 - **`AuthenticationService` & `SessionManager`**:
-  - Verifies BCrypt salted hashes and enforces Role-Based Access Control (RBAC).
+  - Verifies BCrypt salted hashes and enforces Role-Based Access Control (RBAC) with 26 granular `Permission` definitions.
 
 #### D. Data Access Object (DAO) Layer
 - Uses standard **JDBC `PreparedStatement`** for 100% parameterization against SQL injection vulnerabilities.

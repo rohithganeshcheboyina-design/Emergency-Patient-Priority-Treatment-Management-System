@@ -26,6 +26,10 @@ public class NotificationManager {
         showToast("CRITICAL PATIENT ADDED TO EMERGENCY QUEUE", message, true);
     }
 
+    public static void showError(String title, String message) {
+        showToast(title, message, true);
+    }
+
     public static void showInfo(String title, String message) {
         showToast(title, message, false);
     }

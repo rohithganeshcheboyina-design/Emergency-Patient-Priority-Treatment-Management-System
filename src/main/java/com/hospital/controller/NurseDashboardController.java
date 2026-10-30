@@ -71,6 +71,21 @@ public class NurseDashboardController extends BaseController {
                 }
             }
         });
+
+        // Double click row opens patient profile for triage & vitals updating
+        tblQueuePreview.setRowFactory(tv -> {
+            TableRow<QueueItem> row = new TableRow<>();
+            row.setOnMouseClicked(event -> {
+                if (event.getClickCount() == 2 && !row.isEmpty()) {
+                    QueueItem item = row.getItem();
+                    if (item != null && mainLayoutController != null) {
+                        PatientDetailController.setSelectedPatientId(item.getPatientId());
+                        mainLayoutController.loadView("/fxml/PatientDetail.fxml", "Patient Clinical Profile - " + item.getPatientName(), null);
+                    }
+                }
+            });
+            return row;
+        });
     }
 
     public void loadDashboardData() {

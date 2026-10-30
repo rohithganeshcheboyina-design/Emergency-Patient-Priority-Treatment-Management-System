@@ -32,6 +32,7 @@
             <Region HBox.hgrow="ALWAYS" />
 
             <!-- Dynamic Workflow Action Buttons -->
+            <Button fx:id="btnActionUpdateVitals" onAction="#handleUpdateVitals" styleClass="btn-secondary" text="🩺 Update Vitals &amp; Triage" />
             <Button fx:id="btnActionCall" onAction="#handleCallPatient" styleClass="btn-secondary" text="📢 Call to Bay" />
             <Button fx:id="btnActionStartTreatment" onAction="#handleStartTreatment" styleClass="btn-primary" text="🩺 Start Treatment" />
             <Button fx:id="btnActionCompleteTreatment" onAction="#handleCompleteTreatment" styleClass="btn-success" text="✅ Complete Care" />
@@ -79,9 +80,17 @@
                             <Label fx:id="lblBloodGroup" style="-fx-font-size: 14px; -fx-font-weight: bold;" text="O+" />
                         </VBox>
 
-                        <VBox spacing="2.0" GridPane.columnIndex="0" GridPane.columnSpan="4" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2">
+                        <VBox spacing="2.0" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2">
                             <Label styleClass="metric-card-title" text="RESIDENTIAL ADDRESS" />
                             <Label fx:id="lblAddress" style="-fx-font-size: 14px;" text="42 MG Road, Metro District" />
+                        </VBox>
+                        <VBox spacing="2.0" GridPane.columnIndex="2" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2">
+                            <Label styleClass="metric-card-title" text="ALLERGIES &amp; ADVERSE REACTIONS" />
+                            <Label fx:id="lblAllergies" style="-fx-font-size: 14px; -fx-text-fill: #DC2626; -fx-font-weight: bold;" text="None Reported" />
+                        </VBox>
+                        <VBox spacing="2.0" GridPane.columnIndex="3" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2">
+                            <Label styleClass="metric-card-title" text="EMERGENCY CONTACT" />
+                            <Label fx:id="lblEmergencyContact" style="-fx-font-size: 14px;" text="Not Provided" />
                         </VBox>
                     </GridPane>
                 </VBox>
@@ -96,6 +105,30 @@
                         <Label styleClass="metric-card-title" text="REPORTED SYMPTOMS &amp; CHIEF COMPLAINT" />
                         <Label fx:id="lblSymptoms" style="-fx-background-color: #F8FAFC; -fx-background-radius: 8px; -fx-padding: 14px; -fx-font-size: 14px; -fx-text-fill: #1E293B;" text="Symptoms..." wrapText="true" />
                     </VBox>
+
+                    <Label style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #334155;" text="CLINICAL VITAL SIGNS" />
+                    <GridPane hgap="16.0" vgap="10.0" style="-fx-background-color: #F8FAFC; -fx-padding: 14px; -fx-background-radius: 8px; -fx-border-color: #E2E8F0; -fx-border-radius: 8px;">
+                        <VBox spacing="2.0" GridPane.columnIndex="0" GridPane.hgrow="ALWAYS">
+                            <Label styleClass="metric-card-title" text="BLOOD PRESSURE" />
+                            <Label fx:id="lblVitalBp" style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #0F172A;" text="--/--" />
+                        </VBox>
+                        <VBox spacing="2.0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS">
+                            <Label styleClass="metric-card-title" text="HEART RATE" />
+                            <Label fx:id="lblVitalHeartRate" style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #0F172A;" text="-- bpm" />
+                        </VBox>
+                        <VBox spacing="2.0" GridPane.columnIndex="2" GridPane.hgrow="ALWAYS">
+                            <Label styleClass="metric-card-title" text="TEMPERATURE" />
+                            <Label fx:id="lblVitalTemp" style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #0F172A;" text="-- °F" />
+                        </VBox>
+                        <VBox spacing="2.0" GridPane.columnIndex="3" GridPane.hgrow="ALWAYS">
+                            <Label styleClass="metric-card-title" text="SPO2 OXYGEN" />
+                            <Label fx:id="lblVitalSpo2" style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #0F172A;" text="--%" />
+                        </VBox>
+                        <VBox spacing="2.0" GridPane.columnIndex="4" GridPane.hgrow="ALWAYS">
+                            <Label styleClass="metric-card-title" text="RESPIRATORY RATE" />
+                            <Label fx:id="lblVitalRespRate" style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #0F172A;" text="-- /min" />
+                        </VBox>
+                    </GridPane>
 
                     <GridPane hgap="24.0" vgap="14.0">
                         <VBox spacing="2.0" GridPane.columnIndex="0" GridPane.hgrow="ALWAYS">
@@ -126,12 +159,14 @@
                     <Label style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #0284C7;" text="Clinical Procedures &amp; Interventions" />
                     <TableView fx:id="tblTreatments" prefHeight="380.0">
                         <columns>
-                            <TableColumn fx:id="colTrId" prefWidth="70.0" text="ID" />
-                            <TableColumn fx:id="colTrDoctor" prefWidth="180.0" text="Attending Doctor" />
-                            <TableColumn fx:id="colTrStart" prefWidth="150.0" text="Start Time" />
-                            <TableColumn fx:id="colTrEnd" prefWidth="150.0" text="End Time" />
-                            <TableColumn fx:id="colTrStatus" prefWidth="120.0" text="Status" />
-                            <TableColumn fx:id="colTrNotes" prefWidth="300.0" text="Clinical Care Notes" />
+                            <TableColumn fx:id="colTrId" prefWidth="60.0" text="ID" />
+                            <TableColumn fx:id="colTrDoctor" prefWidth="150.0" text="Attending Doctor" />
+                            <TableColumn fx:id="colTrStart" prefWidth="130.0" text="Start Time" />
+                            <TableColumn fx:id="colTrEnd" prefWidth="130.0" text="End Time" />
+                            <TableColumn fx:id="colTrStatus" prefWidth="100.0" text="Status" />
+                            <TableColumn fx:id="colTrDiagnosis" prefWidth="160.0" text="Diagnosis" />
+                            <TableColumn fx:id="colTrMedications" prefWidth="180.0" text="Medications / Rx" />
+                            <TableColumn fx:id="colTrNotes" prefWidth="250.0" text="Clinical Care Notes" />
                         </columns>
                         <placeholder>
                             <Label style="-fx-text-fill: #94A3B8;" text="No treatment records found for this patient." />

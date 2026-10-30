@@ -113,8 +113,22 @@ public class DatabaseConnection {
                 if (line.toUpperCase().startsWith("CREATE DATABASE") ||
                     line.toUpperCase().startsWith("CHARACTER SET") ||
                     line.toUpperCase().startsWith("COLLATE") ||
-                    line.toUpperCase().startsWith("USE ") ||
-                    line.toUpperCase().startsWith("SET FOREIGN_KEY_CHECKS")) {
+                    line.toUpperCase().startsWith("USE ")) {
+                    continue;
+                }
+                if (line.toUpperCase().startsWith("SET FOREIGN_KEY_CHECKS")) {
+                    if (useFallback) {
+                        if (line.contains("0")) {
+                            stmt.execute("SET REFERENTIAL_INTEGRITY FALSE");
+                        } else {
+                            stmt.execute("SET REFERENTIAL_INTEGRITY TRUE");
+                        }
+                    }
+                    continue;
+                }
+                if (useFallback && line.toUpperCase().startsWith("TRUNCATE TABLE ")) {
+                    String table = line.substring(15).replace(";", "").trim();
+                    stmt.execute("DELETE FROM " + table);
                     continue;
                 }
                 sb.append(" ").append(line);
@@ -123,14 +137,16 @@ public class DatabaseConnection {
                     if (sql.endsWith(";")) {
                         sql = sql.substring(0, sql.length() - 1);
                     }
+                    if (useFallback) {
+                        sql = sql.replaceAll("(?i)DATE_SUB\\s*\\(\\s*NOW\\(\\)\\s*,\\s*INTERVAL\\s+(\\d+)\\s+MINUTE\\s*\\)", "DATEADD('minute', -$1, CURRENT_TIMESTAMP)");
+                        sql = sql.replaceAll("(?i)DATE_ADD\\s*\\(\\s*NOW\\(\\)\\s*,\\s*INTERVAL\\s+(\\d+)\\s+DAY\\s*\\)", "DATEADD('day', $1, CURRENT_TIMESTAMP)");
+                    }
                     try {
                         if (!sql.isEmpty()) {
                             stmt.execute(sql);
                         }
                     } catch (SQLException ex) {
-                        if (!ignoreErrors) {
-                            System.err.println("[SQL Warning] " + ex.getMessage() + " for query: " + sql);
-                        }
+                        System.err.println("[SQL Warning] " + ex.getMessage() + " for query: " + (sql.length() > 100 ? sql.substring(0, 100) + "..." : sql));
                     }
                     sb.setLength(0);
                 }

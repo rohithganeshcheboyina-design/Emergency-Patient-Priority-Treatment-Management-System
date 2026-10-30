@@ -11,13 +11,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Data Access Object for Patient management and priority queue persistence.
+ * Data Access Object for Patient management, vitals monitoring, and priority queue persistence.
  */
 public class PatientDAO {
 
     private static final String SELECT_BASE =
             "SELECT p.patient_id, p.patient_code, p.token_number, p.full_name, p.age, p.gender, " +
-            "       p.phone, p.address, p.blood_group, p.symptoms, p.emergency_level, p.priority, " +
+            "       p.phone, p.address, p.blood_group, p.allergies, p.emergency_contact, " +
+            "       p.vital_bp, p.vital_heart_rate, p.vital_temp, p.vital_spo2, p.vital_respiratory_rate, " +
+            "       p.symptoms, p.emergency_level, p.priority, " +
             "       p.arrival_time, p.assigned_doctor_id, u.full_name AS assigned_doctor_name, " +
             "       p.current_status, p.created_at, p.updated_at " +
             "FROM patients p " +
@@ -104,9 +106,10 @@ public class PatientDAO {
         }
 
         String sql = "INSERT INTO patients (patient_code, token_number, full_name, age, gender, phone, " +
-                     "address, blood_group, symptoms, emergency_level, priority, arrival_time, " +
-                     "assigned_doctor_id, current_status, created_at, updated_at) " +
-                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                     "address, blood_group, allergies, emergency_contact, vital_bp, vital_heart_rate, " +
+                     "vital_temp, vital_spo2, vital_respiratory_rate, symptoms, emergency_level, priority, " +
+                     "arrival_time, assigned_doctor_id, current_status, created_at, updated_at) " +
+                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -119,20 +122,36 @@ public class PatientDAO {
             stmt.setString(6, patient.getPhone());
             stmt.setString(7, patient.getAddress());
             stmt.setString(8, patient.getBloodGroup());
-            stmt.setString(9, patient.getSymptoms());
-            stmt.setString(10, patient.getEmergencyLevel().name());
-            stmt.setInt(11, patient.getPriority());
-            stmt.setTimestamp(12, Timestamp.valueOf(patient.getArrivalTime()));
+            stmt.setString(9, patient.getAllergies());
+            stmt.setString(10, patient.getEmergencyContact());
+            stmt.setString(11, patient.getVitalBp());
+
+            if (patient.getVitalHeartRate() != null) stmt.setInt(12, patient.getVitalHeartRate());
+            else stmt.setNull(12, Types.INTEGER);
+
+            if (patient.getVitalTemperature() != null) stmt.setDouble(13, patient.getVitalTemperature());
+            else stmt.setNull(13, Types.DOUBLE);
+
+            if (patient.getVitalSpo2() != null) stmt.setInt(14, patient.getVitalSpo2());
+            else stmt.setNull(14, Types.INTEGER);
+
+            if (patient.getVitalRespiratoryRate() != null) stmt.setInt(15, patient.getVitalRespiratoryRate());
+            else stmt.setNull(15, Types.INTEGER);
+
+            stmt.setString(16, patient.getSymptoms());
+            stmt.setString(17, patient.getEmergencyLevel().name());
+            stmt.setInt(18, patient.getPriority());
+            stmt.setTimestamp(19, Timestamp.valueOf(patient.getArrivalTime()));
 
             if (patient.getAssignedDoctorId() != null && patient.getAssignedDoctorId() > 0) {
-                stmt.setInt(13, patient.getAssignedDoctorId());
+                stmt.setInt(20, patient.getAssignedDoctorId());
             } else {
-                stmt.setNull(13, Types.INTEGER);
+                stmt.setNull(20, Types.INTEGER);
             }
 
-            stmt.setString(14, patient.getCurrentStatus() != null ? patient.getCurrentStatus().name() : "WAITING");
-            stmt.setTimestamp(15, Timestamp.valueOf(patient.getCreatedAt() != null ? patient.getCreatedAt() : LocalDateTime.now()));
-            stmt.setTimestamp(16, Timestamp.valueOf(patient.getUpdatedAt() != null ? patient.getUpdatedAt() : LocalDateTime.now()));
+            stmt.setString(21, patient.getCurrentStatus() != null ? patient.getCurrentStatus().name() : "WAITING");
+            stmt.setTimestamp(22, Timestamp.valueOf(patient.getCreatedAt() != null ? patient.getCreatedAt() : LocalDateTime.now()));
+            stmt.setTimestamp(23, Timestamp.valueOf(patient.getUpdatedAt() != null ? patient.getUpdatedAt() : LocalDateTime.now()));
 
             int affected = stmt.executeUpdate();
             if (affected > 0) {
@@ -151,8 +170,9 @@ public class PatientDAO {
 
     public boolean updatePatient(Patient patient) {
         String sql = "UPDATE patients SET full_name = ?, age = ?, gender = ?, phone = ?, address = ?, " +
-                     "blood_group = ?, symptoms = ?, emergency_level = ?, priority = ?, " +
-                     "assigned_doctor_id = ?, current_status = ?, updated_at = ? WHERE patient_id = ?";
+                     "blood_group = ?, allergies = ?, emergency_contact = ?, vital_bp = ?, vital_heart_rate = ?, " +
+                     "vital_temp = ?, vital_spo2 = ?, vital_respiratory_rate = ?, symptoms = ?, emergency_level = ?, " +
+                     "priority = ?, assigned_doctor_id = ?, current_status = ?, updated_at = ? WHERE patient_id = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -162,23 +182,74 @@ public class PatientDAO {
             stmt.setString(4, patient.getPhone());
             stmt.setString(5, patient.getAddress());
             stmt.setString(6, patient.getBloodGroup());
-            stmt.setString(7, patient.getSymptoms());
-            stmt.setString(8, patient.getEmergencyLevel().name());
-            stmt.setInt(9, patient.getEmergencyLevel().getPriority());
+            stmt.setString(7, patient.getAllergies());
+            stmt.setString(8, patient.getEmergencyContact());
+            stmt.setString(9, patient.getVitalBp());
+
+            if (patient.getVitalHeartRate() != null) stmt.setInt(10, patient.getVitalHeartRate());
+            else stmt.setNull(10, Types.INTEGER);
+
+            if (patient.getVitalTemperature() != null) stmt.setDouble(11, patient.getVitalTemperature());
+            else stmt.setNull(11, Types.DOUBLE);
+
+            if (patient.getVitalSpo2() != null) stmt.setInt(12, patient.getVitalSpo2());
+            else stmt.setNull(12, Types.INTEGER);
+
+            if (patient.getVitalRespiratoryRate() != null) stmt.setInt(13, patient.getVitalRespiratoryRate());
+            else stmt.setNull(13, Types.INTEGER);
+
+            stmt.setString(14, patient.getSymptoms());
+            stmt.setString(15, patient.getEmergencyLevel().name());
+            stmt.setInt(16, patient.getEmergencyLevel().getPriority());
 
             if (patient.getAssignedDoctorId() != null && patient.getAssignedDoctorId() > 0) {
-                stmt.setInt(10, patient.getAssignedDoctorId());
+                stmt.setInt(17, patient.getAssignedDoctorId());
             } else {
-                stmt.setNull(10, Types.INTEGER);
+                stmt.setNull(17, Types.INTEGER);
             }
 
-            stmt.setString(11, patient.getCurrentStatus().name());
-            stmt.setTimestamp(12, Timestamp.valueOf(LocalDateTime.now()));
-            stmt.setInt(13, patient.getPatientId());
+            stmt.setString(18, patient.getCurrentStatus().name());
+            stmt.setTimestamp(19, Timestamp.valueOf(LocalDateTime.now()));
+            stmt.setInt(20, patient.getPatientId());
 
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             throw new DatabaseException("Error updating patient ID: " + patient.getPatientId(), e);
+        }
+    }
+
+    public boolean updateVitals(int patientId, String bp, Integer hr, Double temp, Integer spo2, Integer rr,
+                                String symptoms, EmergencyLevel level) {
+        StringBuilder sql = new StringBuilder("UPDATE patients SET updated_at = ?");
+        if (bp != null) sql.append(", vital_bp = ?");
+        if (hr != null) sql.append(", vital_heart_rate = ?");
+        if (temp != null) sql.append(", vital_temp = ?");
+        if (spo2 != null) sql.append(", vital_spo2 = ?");
+        if (rr != null) sql.append(", vital_respiratory_rate = ?");
+        if (symptoms != null) sql.append(", symptoms = ?");
+        if (level != null) sql.append(", emergency_level = ?, priority = ?");
+        sql.append(" WHERE patient_id = ?");
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
+
+            int idx = 1;
+            stmt.setTimestamp(idx++, Timestamp.valueOf(LocalDateTime.now()));
+            if (bp != null) stmt.setString(idx++, bp);
+            if (hr != null) stmt.setInt(idx++, hr);
+            if (temp != null) stmt.setDouble(idx++, temp);
+            if (spo2 != null) stmt.setInt(idx++, spo2);
+            if (rr != null) stmt.setInt(idx++, rr);
+            if (symptoms != null) stmt.setString(idx++, symptoms);
+            if (level != null) {
+                stmt.setString(idx++, level.name());
+                stmt.setInt(idx++, level.getPriority());
+            }
+            stmt.setInt(idx, patientId);
+
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            throw new DatabaseException("Error updating vitals for patient ID: " + patientId, e);
         }
     }
 
@@ -245,6 +316,24 @@ public class PatientDAO {
         p.setPhone(rs.getString("phone"));
         p.setAddress(rs.getString("address"));
         p.setBloodGroup(rs.getString("blood_group"));
+
+        // Extended vitals & demographics
+        try {
+            p.setAllergies(rs.getString("allergies"));
+            p.setEmergencyContact(rs.getString("emergency_contact"));
+            p.setVitalBp(rs.getString("vital_bp"));
+            int hr = rs.getInt("vital_heart_rate");
+            if (!rs.wasNull()) p.setVitalHeartRate(hr);
+            double temp = rs.getDouble("vital_temp");
+            if (!rs.wasNull()) p.setVitalTemperature(temp);
+            int spo2 = rs.getInt("vital_spo2");
+            if (!rs.wasNull()) p.setVitalSpo2(spo2);
+            int rr = rs.getInt("vital_respiratory_rate");
+            if (!rs.wasNull()) p.setVitalRespiratoryRate(rr);
+        } catch (SQLException ignored) {
+            // In case columns not present in legacy schema query
+        }
+
         p.setSymptoms(rs.getString("symptoms"));
         p.setEmergencyLevel(EmergencyLevel.fromString(rs.getString("emergency_level")));
         p.setPriority(rs.getInt("priority"));

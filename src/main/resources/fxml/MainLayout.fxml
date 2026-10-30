@@ -50,9 +50,12 @@
                     <Button fx:id="btnNavRegister" maxWidth="Infinity" onAction="#handleNavRegister" styleClass="sidebar-nav-btn" text="➕  Patient Registration" />
                     <Button fx:id="btnNavPatients" maxWidth="Infinity" onAction="#handleNavPatients" styleClass="sidebar-nav-btn" text="👥  Patient Directory" />
                     <Button fx:id="btnNavTreatment" maxWidth="Infinity" onAction="#handleNavTreatment" styleClass="sidebar-nav-btn" text="🩺  Treatment Station" />
+                    <Button fx:id="btnNavBeds" maxWidth="Infinity" onAction="#handleNavBeds" styleClass="sidebar-nav-btn" text="🛏️  Hospital Bed Inventory" />
+                    <Button fx:id="btnNavAppointments" maxWidth="Infinity" onAction="#handleNavAppointments" styleClass="sidebar-nav-btn" text="📅  Consultations" />
                     <Button fx:id="btnNavReports" maxWidth="Infinity" onAction="#handleNavReports" styleClass="sidebar-nav-btn" text="📈  Reports &amp; Analytics" />
                     <Button fx:id="btnNavLogs" maxWidth="Infinity" onAction="#handleNavLogs" styleClass="sidebar-nav-btn" text="📋  Activity Logs" />
                     <Button fx:id="btnNavUsers" maxWidth="Infinity" onAction="#handleNavUsers" styleClass="sidebar-nav-btn" text="👤  Staff Management" />
+                    <Button fx:id="btnNavRoleAuth" maxWidth="Infinity" onAction="#handleNavRoleAuth" styleClass="sidebar-nav-btn" text="🛡️  Role Authorization" />
                     <Button fx:id="btnNavSettings" maxWidth="Infinity" onAction="#handleNavSettings" styleClass="sidebar-nav-btn" text="⚙️  System Settings" />
                     <Button fx:id="btnNavAbout" maxWidth="Infinity" onAction="#handleNavAbout" styleClass="sidebar-nav-btn" text="ℹ️  About &amp; Disclaimer" />
                 </VBox>

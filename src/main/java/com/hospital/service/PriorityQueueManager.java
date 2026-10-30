@@ -121,6 +121,23 @@ public class PriorityQueueManager {
     }
 
     /**
+     * Updates an emergency patient's triage severity level and recalculates their position in the queue.
+     */
+    public void updatePriority(int patientId, EmergencyLevel newLevel) {
+        if (newLevel == null) return;
+        synchronized (lock) {
+            for (QueueItem item : queueItems) {
+                if (item.getPatientId() == patientId) {
+                    item.getPatient().setEmergencyLevel(newLevel);
+                    item.getPatient().setPriority(newLevel.getPriority());
+                    reorderAndAssignPositions();
+                    break;
+                }
+            }
+        }
+    }
+
+    /**
      * Sorts the queue according to priority rules and assigns 1-indexed queue positions.
      */
     private void reorderAndAssignPositions() {

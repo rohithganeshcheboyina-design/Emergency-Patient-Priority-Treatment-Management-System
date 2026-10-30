@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Priority?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<ScrollPane fitToWidth="true" stylesheets="@../css/main.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.hospital.controller.BedManagementController">
+    <VBox spacing="18.0" styleClass="content-area">
+        <!-- Title & Action Bar -->
+        <HBox alignment="CENTER_LEFT" spacing="12.0">
+            <VBox spacing="2.0">
+                <Label style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #0F172A;" text="Hospital Bed Inventory &amp; Ward Capacity" />
+                <Label style="-fx-font-size: 12px; -fx-text-fill: #64748B;" text="Supervise emergency bays, ICU capacity, trauma suites, and patient bed allocations" />
+            </VBox>
+            <Region HBox.hgrow="ALWAYS" />
+            <Button onAction="#handleRefresh" styleClass="btn-secondary" text="🔄 Refresh Capacity" />
+        </HBox>
+
+        <!-- Metric KPI Cards -->
+        <GridPane hgap="12.0" vgap="12.0">
+            <VBox styleClass="metric-card" GridPane.columnIndex="0" GridPane.hgrow="ALWAYS">
+                <Label styleClass="metric-card-title" text="TOTAL BED CAPACITY" />
+                <Label fx:id="lblTotalBeds" styleClass="metric-card-value" text="0" />
+                <Label style="-fx-font-size: 11px; -fx-text-fill: #64748B;" text="All hospital departments" />
+            </VBox>
+
+            <VBox styleClass="metric-card" style="-fx-border-color: #10B981;" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS">
+                <Label styleClass="metric-card-title" text="AVAILABLE BEDS" />
+                <Label fx:id="lblAvailableBeds" styleClass="metric-card-value" style="-fx-text-fill: #059669;" text="0" />
+                <Label style="-fx-font-size: 11px; -fx-text-fill: #059669;" text="Cleaned and ready for intake" />
+            </VBox>
+
+            <VBox styleClass="metric-card" style="-fx-border-color: #EF4444;" GridPane.columnIndex="2" GridPane.hgrow="ALWAYS">
+                <Label styleClass="metric-card-title" text="OCCUPIED BEDS" />
+                <Label fx:id="lblOccupiedBeds" styleClass="metric-card-value" style="-fx-text-fill: #DC2626;" text="0" />
+                <Label style="-fx-font-size: 11px; -fx-text-fill: #DC2626;" text="Currently occupied by patients" />
+            </VBox>
+
+            <VBox styleClass="metric-card, card-high" GridPane.columnIndex="3" GridPane.hgrow="ALWAYS">
+                <Label styleClass="metric-card-title" text="EMERGENCY BAYS" />
+                <Label fx:id="lblEmergencyBeds" styleClass="metric-card-value" style="-fx-text-fill: #EA580C;" text="0" />
+                <Label style="-fx-font-size: 11px; -fx-text-fill: #EA580C;" text="Emergency department beds" />
+            </VBox>
+
+            <VBox styleClass="metric-card, card-critical" GridPane.columnIndex="4" GridPane.hgrow="ALWAYS">
+                <Label styleClass="metric-card-title" text="ICU CRITICAL BEDS" />
+                <Label fx:id="lblIcuBeds" styleClass="metric-card-value" style="-fx-text-fill: #991B1B;" text="0" />
+                <Label style="-fx-font-size: 11px; -fx-text-fill: #991B1B;" text="Intensive care unit beds" />
+            </VBox>
+        </GridPane>
+
+        <!-- Filters & Table Area -->
+        <VBox spacing="10.0">
+            <HBox alignment="CENTER_LEFT" spacing="12.0">
+                <Label style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #0F172A;" text="Ward &amp; Emergency Beds" />
+                <Region HBox.hgrow="ALWAYS" />
+                <ComboBox fx:id="cmbTypeFilter" prefWidth="180.0" promptText="Filter by Type" />
+                <ComboBox fx:id="cmbStatusFilter" prefWidth="160.0" promptText="Filter by Status" />
+            </HBox>
+
+            <TableView fx:id="tblBeds" minHeight="350.0" prefHeight="420.0">
+                <columns>
+                    <TableColumn fx:id="colBedId" prefWidth="60.0" text="ID" />
+                    <TableColumn fx:id="colBedNumber" prefWidth="120.0" text="Bed Number" />
+                    <TableColumn fx:id="colBedType" prefWidth="160.0" text="Ward / Unit Type" />
+                    <TableColumn fx:id="colStatus" prefWidth="110.0" text="Status" />
+                    <TableColumn fx:id="colPatient" prefWidth="220.0" text="Allocated Patient" />
+                    <TableColumn fx:id="colAssignedAt" prefWidth="160.0" text="Assigned Since" />
+                    <TableColumn fx:id="colNotes" prefWidth="200.0" text="Clinical Equipment / Notes" />
+                    <TableColumn fx:id="colAction" prefWidth="130.0" text="Action" />
+                </columns>
+                <placeholder>
+                    <Label style="-fx-text-fill: #94A3B8;" text="No beds match selected filter criteria." />
+                </placeholder>
+            </TableView>
+        </VBox>
+    </VBox>
+</ScrollPane>

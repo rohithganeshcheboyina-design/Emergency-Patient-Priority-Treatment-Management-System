@@ -32,6 +32,8 @@ public class PatientRegistrationController extends BaseController {
     @FXML private ComboBox<String> cmbBloodGroup;
     @FXML private ComboBox<Doctor> cmbDoctor;
     @FXML private TextField txtAddress;
+    @FXML private TextField txtAllergies;
+    @FXML private TextField txtEmergencyContact;
 
     @FXML private TextArea txtSymptoms;
     @FXML private ComboBox<EmergencyLevel> cmbEmergencyLevel;
@@ -112,6 +114,8 @@ public class PatientRegistrationController extends BaseController {
             cmbDoctor.getSelectionModel().clearSelection();
         }
         txtAddress.clear();
+        txtAllergies.clear();
+        txtEmergencyContact.clear();
         txtSymptoms.clear();
 
         // Default to MEDIUM
@@ -216,6 +220,8 @@ public class PatientRegistrationController extends BaseController {
         patient.setPhone(phone);
         patient.setAddress(address);
         patient.setBloodGroup(blood);
+        patient.setAllergies(txtAllergies.getText() != null ? txtAllergies.getText().trim() : null);
+        patient.setEmergencyContact(txtEmergencyContact.getText() != null ? txtEmergencyContact.getText().trim() : null);
         patient.setSymptoms(symptoms);
         patient.setEmergencyLevel(level);
         patient.setPriority(level.getPriority());
