@@ -338,6 +338,13 @@ public class LiveQueueController extends BaseController {
         }
     }
 
+    @Override
+    public void onDetached() {
+        if (autoRefreshTimeline != null) {
+            autoRefreshTimeline.stop();
+        }
+    }
+
     @FXML
     public void handleResetFilters() {
         txtSearch.clear();

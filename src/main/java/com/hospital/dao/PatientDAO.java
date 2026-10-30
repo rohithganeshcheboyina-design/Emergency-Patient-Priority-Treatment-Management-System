@@ -72,6 +72,30 @@ public class PatientDAO {
         return list;
     }
 
+    public List<Patient> searchPatients(String query) {
+        List<Patient> list = new ArrayList<>();
+        if (query == null || query.trim().isEmpty()) {
+            return getAllPatients();
+        }
+        String sql = SELECT_BASE + "WHERE LOWER(p.full_name) LIKE ? OR LOWER(p.patient_code) LIKE ? OR LOWER(p.token_number) LIKE ? OR LOWER(p.phone) LIKE ? ORDER BY p.patient_id DESC";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            String pattern = "%" + query.trim().toLowerCase() + "%";
+            stmt.setString(1, pattern);
+            stmt.setString(2, pattern);
+            stmt.setString(3, pattern);
+            stmt.setString(4, pattern);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    list.add(mapRowToPatient(rs));
+                }
+            }
+        } catch (SQLException e) {
+            throw new DatabaseException("Error searching patients with query: " + query, e);
+        }
+        return list;
+    }
+
     /**
      * Retrieves active patients in the queue ordered by Emergency Priority ASC and Arrival Time ASC.
      */

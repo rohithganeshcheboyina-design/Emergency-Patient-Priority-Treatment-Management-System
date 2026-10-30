@@ -167,4 +167,24 @@ public class PriorityQueueManagerTest {
         queueManager.enqueue(waiting);
         assertTrue(queueManager.isEmpty(), "Patient in treatment should be removed from waiting queue");
     }
+
+    @Test
+    @DisplayName("Should re-order queue dynamically when patient priority changes due to vitals update")
+    public void testDynamicPriorityUpdate() {
+        Patient p1 = createTestPatient(1, "P0001", "ER-001", "Patient Low", EmergencyLevel.LOW, LocalTime.of(10, 0), PatientStatus.WAITING);
+        Patient p2 = createTestPatient(2, "P0002", "ER-002", "Patient High", EmergencyLevel.HIGH, LocalTime.of(10, 5), PatientStatus.WAITING);
+
+        queueManager.enqueue(p1);
+        queueManager.enqueue(p2);
+
+        assertEquals("Patient High", queueManager.peek().getPatientName());
+        assertEquals(1, queueManager.peek().getQueuePosition());
+
+        // Condition worsens: p1 deteriorates and becomes CRITICAL
+        queueManager.updatePriority(1, EmergencyLevel.CRITICAL);
+
+        assertEquals("Patient Low", queueManager.peek().getPatientName());
+        assertEquals(EmergencyLevel.CRITICAL, queueManager.peek().getEmergencyLevel());
+        assertEquals(1, queueManager.peek().getQueuePosition());
+    }
 }

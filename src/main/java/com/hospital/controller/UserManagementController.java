@@ -1,11 +1,7 @@
 package com.hospital.controller;
 
 import com.hospital.dao.UserDAO;
-import com.hospital.model.Admin;
-import com.hospital.model.Doctor;
-import com.hospital.model.Nurse;
-import com.hospital.model.Role;
-import com.hospital.model.User;
+import com.hospital.model.*;
 import com.hospital.security.PasswordUtil;
 import com.hospital.security.SessionManager;
 import com.hospital.util.AlertHelper;
@@ -78,8 +74,10 @@ public class UserManagementController extends BaseController {
                         badge.setStyle("-fx-background-color: #FEF3C7; -fx-text-fill: #B45309; -fx-font-weight: bold;");
                     } else if ("Doctor".equalsIgnoreCase(role)) {
                         badge.setStyle("-fx-background-color: #EFF6FF; -fx-text-fill: #1D4ED8; -fx-font-weight: bold;");
-                    } else {
+                    } else if ("Nurse".equalsIgnoreCase(role)) {
                         badge.setStyle("-fx-background-color: #ECFDF5; -fx-text-fill: #047857; -fx-font-weight: bold;");
+                    } else {
+                        badge.setStyle("-fx-background-color: #F3E8FF; -fx-text-fill: #7E22CE; -fx-font-weight: bold;");
                     }
                     setGraphic(badge);
                     setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
@@ -157,6 +155,8 @@ public class UserManagementController extends BaseController {
             newUser = new Doctor(0, username, passwordHash, fullName, phone, email, true, LocalDateTime.now(), "Emergency Physician", "Emergency Medicine");
         } else if (role == Role.NURSE) {
             newUser = new Nurse(0, username, passwordHash, fullName, phone, email, true, LocalDateTime.now(), "General Shift", "Triage Station 1");
+        } else if (role == Role.PATIENT) {
+            newUser = new PatientUser(0, username, passwordHash, fullName, phone, email, true, LocalDateTime.now(), "P" + String.format("%04d", (int)(Math.random() * 9000 + 1000)));
         } else {
             newUser = new Admin(0, username, passwordHash, fullName, phone, email, true, LocalDateTime.now());
         }

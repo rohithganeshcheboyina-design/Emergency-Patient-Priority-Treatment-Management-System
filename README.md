@@ -269,22 +269,30 @@ REGISTERED
 
 ## 🧪 Automated Testing Suite
 
-The project includes a comprehensive automated JUnit 5 test suite with **26 passing tests (0 failures, 0 errors)** covering priority queue ordering, FIFO-within-priority, clinical validation, RBAC permissions, bed inventory, and outpatient appointments.
+The project includes a comprehensive automated JUnit 5 test suite with **38 passing tests (0 failures, 0 errors)** covering priority queue ordering, dynamic triage recalculation, FIFO-within-priority, clinical validation, RBAC permissions, bed inventory, outpatient appointments, SQL injection protection, password hashing, and complete end-to-end clinical journeys.
 
 Run the test suite using:
 ```powershell
 .\mvnw.cmd test
 ```
 
+Or execute the complete packaging and verification lifecycle:
+```powershell
+.\mvnw.cmd verify
+```
+
 ### Test Classes:
-1. **`PriorityQueueManagerTest`**: Verifies Critical before High before Medium before Low; verifies arrival-time ordering for identical priorities; asserts the exact specification scenario (A, C, B, D).
-2. **`PatientValidationTest`**: Verifies clinical validation rules (blank names, negative age, invalid phone, missing symptoms, null severity).
-3. **`AuthenticationServiceTest`**: Verifies BCrypt salted hashing, authentication success, wrong credentials rejection, and role matching.
-4. **`StatusWorkflowTest`**: Verifies valid transitions and asserts that invalid state jumps (e.g. `DISCHARGED` back to `IN_TREATMENT`) are strictly prevented.
-5. **`RoleAuthorizationTest`**: Verifies granular RBAC enforcement across Admin, Doctor, Nurse, and Patient roles, ensuring unauthorized operations throw `UnauthorizedException`.
-6. **`BedManagementTest`**: Tests bed inventory tracking, ward vs. ICU capacity metrics, patient bed allocation, and bed discharge/cleaning release.
-7. **`AppointmentServiceTest`**: Validates outpatient booking with doctor scheduling, duplicate time slot prevention, cancellation, and isolation from emergency queue.
-8. **`TreatmentServiceTest`**: Tests clinical workflow start, complete, and discharge by doctor, ensuring nurses and admins cannot start or complete treatments.
+1. **`PriorityQueueManagerTest`** (6 tests): Verifies Critical before High before Medium before Low; arrival-time ordering for identical priorities; exact specification scenario (A, C, B, D); dynamic priority re-sorting upon condition updates.
+2. **`PatientValidationTest`** (6 tests): Verifies clinical validation rules (blank names, negative age, invalid phone, missing symptoms, null severity).
+3. **`AuthenticationServiceTest`** (3 tests): Verifies BCrypt salted hashing, authentication success, wrong credentials rejection, and role matching.
+4. **`StatusWorkflowTest`** (2 tests): Verifies valid transitions and asserts that invalid state jumps (e.g. `DISCHARGED` back to `IN_TREATMENT`) are strictly prevented.
+5. **`RoleAuthorizationTest`** (4 tests): Verifies granular RBAC enforcement across Admin, Doctor, Nurse, and Patient roles, ensuring unauthorized operations throw `UnauthorizedException`.
+6. **`BedManagementTest`** (2 tests): Tests bed inventory tracking, ward vs. ICU capacity metrics, patient bed allocation, and bed discharge/release.
+7. **`AppointmentServiceTest`** (2 tests): Validates outpatient booking with doctor scheduling, duplicate time slot prevention, cancellation, and isolation from emergency queue.
+8. **`TreatmentServiceTest`** (2 tests): Tests clinical workflow start, complete, and discharge by doctor, ensuring nurses and admins cannot start or complete treatments.
+9. **`UserDAOTest`** (3 tests): Verifies staff account lifecycle (CRUD), password hashing updates, soft-deletion, and active doctor/nurse filtering.
+10. **`SecurityAndInjectionTest`** (7 tests): Tests SQL injection resistance across search queries, cryptographic password hashing, and privilege escalation guards across all four roles.
+11. **`EndToEndHospitalWorkflowTest`** (1 test): Complete real-world end-to-end clinical lifecycle: patient intake, dynamic triage deterioration, ICU bed allocation, doctor examination, diagnosis & medication prescriptions, discharge, bed sanitization, patient self-service appointment scheduling/cancellation, and administrative CSV audit export.
 
 ---
 
@@ -293,7 +301,7 @@ Run the test suite using:
 Automated testing and compilation are configured via GitHub Actions in [`.github/workflows/ci.yml`](.github/workflows/ci.yml). Every push or pull request to `master` automatically triggers:
 - JDK 17 environment setup.
 - Clean Maven compilation.
-- Execution of all 26 unit tests.
+- Execution of all 38 unit and integration tests.
 - Standalone shaded JAR packaging.
 
 ---

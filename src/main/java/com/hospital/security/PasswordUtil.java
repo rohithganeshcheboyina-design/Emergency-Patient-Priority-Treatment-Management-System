@@ -38,6 +38,10 @@ public class PasswordUtil {
         return plainPassword.equals(storedHash);
     }
 
+    public static boolean verifyPassword(String plainPassword, String storedHash) {
+        return checkPassword(plainPassword, storedHash);
+    }
+
     public static void main(String[] args) {
         System.out.println("admin123=" + hashPassword("admin123"));
         System.out.println("doctor123=" + hashPassword("doctor123"));

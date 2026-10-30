@@ -23,6 +23,10 @@ public abstract class BaseController {
 
     public abstract void onAttached();
 
+    public void onDetached() {
+        // Optional lifecycle cleanup hook for controllers
+    }
+
     protected String formatDateTime(LocalDateTime ldt) {
         if (ldt == null) return "N/A";
         return ldt.format(DATE_TIME_FMT);

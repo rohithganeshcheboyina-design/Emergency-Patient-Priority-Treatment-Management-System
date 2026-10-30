@@ -62,6 +62,7 @@ public class MainLayoutController {
 
     private final List<Button> navButtons = new ArrayList<>();
     private Timeline clockTimeline;
+    private BaseController currentController;
 
     // Shared Central Services
     private PriorityQueueManager queueManager;
@@ -233,13 +234,20 @@ public class MainLayoutController {
         }
 
         try {
+            if (currentController != null) {
+                currentController.onDetached();
+            }
+
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
             Parent view = loader.load();
 
             Object controller = loader.getController();
             if (controller instanceof BaseController) {
-                ((BaseController) controller).setMainLayoutController(this);
-                ((BaseController) controller).onAttached();
+                currentController = (BaseController) controller;
+                currentController.setMainLayoutController(this);
+                currentController.onAttached();
+            } else {
+                currentController = null;
             }
 
             // Replace content while preserving notification overlay
@@ -382,6 +390,10 @@ public class MainLayoutController {
 
         if (clockTimeline != null) {
             clockTimeline.stop();
+        }
+        if (currentController != null) {
+            currentController.onDetached();
+            currentController = null;
         }
 
         authenticationService.logout();
